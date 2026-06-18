@@ -1,4 +1,4 @@
-import os, json, pathlib
+import os, json, pathlib, sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATA_PATH = pathlib.Path(__file__).resolve().parent.parent / "frontend" / "data.json"
+_self_dir = pathlib.Path(__file__).resolve().parent
+BASE_DIR = _self_dir if (_self_dir / "frontend" / "data.json").exists() else _self_dir.parent
+DATA_PATH = BASE_DIR / "frontend" / "data.json"
 FULL_CONTEXT = ""
 
 def load_data():
@@ -152,7 +154,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FRONTEND_DIR = pathlib.Path(__file__).resolve().parent.parent / "frontend"
+FRONTEND_DIR = BASE_DIR / "frontend"
 
 GEMINI_KEY = os.environ.get("GOOGLE_GEMINI_KEY", "")
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-pro-preview")
