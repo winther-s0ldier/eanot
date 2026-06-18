@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="devyani_logo.svg">
+  <title>EAMOT — Maintenance Intelligence Platform | Devyani International</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel: #1a1a1a;
+      --panel2: #1b2230;
+      --line: #2a3344;
+      --text: #e9edf3;
+      --muted: #9aa3b2;
+      --accent: #9bb0c7;
+      --accent2: #80bfa8;
+      --warn: #d6a85a;
+      --danger: #cc7066;
+      --grid: #243042;
+      --radius: 10px
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased
+    }
+
+    html,
+    body {
+      margin: 0;
+      background: #0e1116;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+      font-size: 14px;
+      min-height: 100vh
+    }
+
+    .container {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 8px 22px 60px
+    }
+
+    /* ── Login ── */
+    .login-bg {
+      position: fixed;
+      inset: 0;
+      background: #0c1016;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: none
+    }
+
+    .login-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 30px 34px;
+      width: 380px;
+      max-width: 92vw;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .5)
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px
+    }
+
+    .login-brand .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #2a3344;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .login-brand .t1 {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 600
+    }
+
+    .login-brand .t2 {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .login-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 4px
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 22px
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px
+    }
+
+    .login-field label {
+      font-size: 10.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .login-field input {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none
+    }
+
+    .login-field input:focus {
+      border-color: #6a7b92
+    }
+
+    .login-submit {
+      background: #3a4456;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 6px;
+      transition: background .15s
+    }
+
+    .login-submit:hover {
+      background: #4a5569
+    }
+
+    .login-err {
+      font-size: 11.5px;
+      color: var(--danger);
+      margin-top: 10px;
+      min-height: 14px
+    }
+
+    .login-foot {
+      margin-top: 18px;
+      font-size: 10.5px;
+      color: #7f8897;
+      text-align: center;
+      letter-spacing: .3px
+    }
+
+    /* ── Loading ── */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      font-size: 13px;
+      color: var(--muted);
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--grid);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    /* ── App Bar ── */
+    .appbar {
+      background: #0d1219;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      box-shadow: none;
+      display: none
+    }
+
+    .appbar-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 18px
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: #2a3344;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .brand-divider {
+      width: 1px;
+      height: 26px;
+      background: var(--line)
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2
+    }
+
+    .brand-text .t1 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: .2px
+    }
+
+    .brand-text .t2 {
+      font-size: 10.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .appbar-spacer {
+      flex: 1
+    }
+
+    .appbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .appbar-meta .badge {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 3px 10px;
+      border-radius: 11px;
+      font-size: 10px
+    }
+
+    .appbar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 14px;
+      border-left: 1px solid var(--line)
+    }
+
+    .appbar-user .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--panel2);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .appbar-user .uinfo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      font-size: 11.5px
+    }
+
+    .appbar-user .uinfo .n {
+      color: var(--text);
+      font-weight: 500
+    }
+
+    .appbar-user .uinfo .r {
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: .15s
+    }
+
+    .logout-btn:hover {
+      color: var(--text);
+      border-color: var(--danger)
+    }
+
+    /* ── Page Head ── */
+    .page-head {
+      padding: 18px 0 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .page-head .pcrumb {
+      color: var(--muted);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px
+    }
+
+    .page-head h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 650;
+      color: var(--text);
+      letter-spacing: -.015em;
+      line-height: 1.2
+    }
+
+    .page-head .window-tag {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--muted);
+      flex-wrap: wrap
+    }
+
+    .page-head .window-tag b {
+      color: var(--text);
+      font-weight: 500
+    }
+
+    /* ── Filter Bar ── */
+    .filter-bar {
+      position: sticky;
+      top: 54px;
+      z-index: 50;
+      background: #101620;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 0 0 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start
+    }
+
+    .f-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 20px;
+      border-right: 1px solid #262d3a
+    }
+
+    .f-group:last-of-type {
+      border-right: none;
+      padding-right: 0
+    }
+
+    .f-group label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 600
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      max-width: 400px
+    }
+
+    .chip {
+      background: transparent;
+      border: 1px solid #313b4c;
+      color: #aeb9c8;
+      font-size: 11.5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+      transition: .15s;
+      white-space: nowrap;
+      font-weight: 600
+    }
+
+    .chip:hover {
+      border-color: #4f5d72;
+      color: var(--text);
+      background: rgba(255, 255, 255, .015)
+    }
+
+    .chip.active {
+      background: #232c3b;
+      border-color: #5f6f86;
+      color: #f7f9fd
+    }
+
+    .f-group select {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11.5px;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      min-height: 32px
+    }
+
+    .f-group select:focus {
+      border-color: #6a7b92
+    }
+
+    .f-group input {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11.5px;
+      font-family: inherit;
+      outline: none;
+      width: 170px;
+      min-height: 32px
+    }
+
+    .f-group input:focus {
+      border-color: #6a7b92
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid #323c4d;
+      color: #afbac9;
+      font-size: 11.5px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: .15s;
+      align-self: flex-end;
+      font-weight: 600
+    }
+
+    .btn-reset:hover {
+      color: #f0f4fb;
+      border-color: #55647a;
+      background: rgba(255, 255, 255, .015)
+    }
+
+    .filter-summary {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+      align-self: center;
+      background: #1a2029;
+      padding: 6px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      white-space: nowrap
+    }
+
+    /* ── KPI Strip ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 10px 0 14px
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .02)
+    }
+
+    .kpi .label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin-bottom: 6px;
+      font-weight: 600
+    }
+
+    .kpi .value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.1
+    }
+
+    .kpi .sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    .kpi.accent .value {
+      color: var(--accent)
+    }
+
+    .kpi.good .value {
+      color: var(--accent2)
+    }
+
+    .kpi.warn .value {
+      color: var(--warn)
+    }
+
+    .kpi.bad .value {
+      color: var(--danger)
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--line);
+      margin: 6px 0 14px;
+      flex-wrap: wrap;
+      padding-bottom: 2px
+    }
+
+    .tab {
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: .15s;
+      background: none;
+      border-radius: 8px;
+      font-family: inherit
+    }
+
+    .tab.active {
+      color: var(--text);
+      border-color: #3d485b;
+      background: #1a2230
+    }
+
+    .tab:hover {
+      color: var(--text)
+    }
+
+    .tab-panel {
+      display: none;
+      position: relative
+    }
+
+    .tab-panel.active {
+      display: block
+    }
+
+    .empty-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 20, 25, .92);
+      z-index: 10;
+      border-radius: 12px;
+      padding: 40px
+    }
+
+    .empty-overlay p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+      text-align: center
+    }
+
+    /* ── Cards ── */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 14px
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 15px 16px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column
+    }
+
+    .card.col-12 {
+      grid-column: span 12
+    }
+
+    .card.col-8 {
+      grid-column: span 8
+    }
+
+    .card.col-6 {
+      grid-column: span 6
+    }
+
+    .card.col-4 {
+      grid-column: span 4
+    }
+
+    .card.col-3 {
+      grid-column: span 3
+    }
+
+    .card.col-7 {
+      grid-column: span 7
+    }
+
+    .card.col-5 {
+      grid-column: span 5
+    }
+
+    @media(max-width:980px) {
+      .card[class*=" col-"] {
+        grid-column: span 12
+      }
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px
+    }
+
+    .card-head h3 {
+      margin: 0
+    }
+
+    .card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #d4dbe5;
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 0 0 10px;
+      line-height: 1.35
+    }
+
+    .toggle {
+      font-size: 10.5px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border: 1px solid #313d4f;
+      border-radius: 7px;
+      background: transparent;
+      user-select: none;
+      transition: .15s;
+      font-weight: 600
+    }
+
+    .toggle:hover {
+      color: var(--text);
+      border-color: #55647a;
+      background: rgba(255, 255, 255, .015)
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 280px
+    }
+
+    .chart-wrap.tall {
+      height: 340px
+    }
+
+    .chart-wrap.short {
+      height: 200px
+    }
+
+    .table-wrap {
+      display: none
+    }
+
+    .table-wrap.active {
+      display: block
+    }
+
+    .chart-wrap.hidden {
+      display: none
+    }
+
+    /* ── Tables ── */
+    table.simple {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px
+    }
+
+    table.simple th,
+    table.simple td {
+      text-align: left;
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    table.simple th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: none;
+      letter-spacing: 0
+    }
+
+    table.simple td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums
+    }
+
+    /* ── Grid.js override ── */
+    .gridjs-container {
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--text);
+      padding: 0
+    }
+
+    .gridjs-wrapper {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: auto;
+      background: var(--panel)
+    }
+
+    .gridjs-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent
+    }
+
+    .gridjs-thead {
+      background: var(--panel2)
+    }
+
+    .gridjs-th {
+      background: var(--panel2);
+      color: var(--muted);
+      text-transform: none;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0;
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+      position: relative
+    }
+
+    .gridjs-td {
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left
+    }
+
+    .gridjs-tr:nth-child(even) .gridjs-td {
+      background: #141a21
+    }
+
+    .gridjs-tr:hover .gridjs-td {
+      background: rgba(155, 176, 199, .10);
+      color: #fff
+    }
+
+    .gridjs-pagination {
+      color: var(--muted);
+      padding: 10px 6px;
+      font-size: 11px;
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .gridjs-pagination .gridjs-pages {
+      display: flex;
+      gap: 3px
+    }
+
+    .gridjs-pagination .gridjs-pages button {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .gridjs-pagination .gridjs-pages button:hover:not(:disabled) {
+      border-color: var(--accent)
+    }
+
+    .gridjs-pagination .gridjs-pages button:disabled {
+      opacity: .35;
+      cursor: not-allowed
+    }
+
+    .gridjs-pagination .gridjs-pages button.gridjs-currentPage {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff
+    }
+
+    .gridjs-search-input {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 12px;
+      width: 220px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 6px
+    }
+
+    .gridjs-search-input:focus {
+      border-color: #6a7b92
+    }
+
+    .gridjs-summary {
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .gridjs-footer {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0
+    }
+
+    /* ── Heatmap ── */
+    #heatmap {
+      display: grid;
+      grid-template-columns: 46px repeat(24, 1fr);
+      gap: 2px;
+      margin-top: 8px;
+      font-size: 10px
+    }
+
+    #heatmap .hm-corner,
+    #heatmap .hm-h,
+    #heatmap .hm-d {
+      padding: 4px 2px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 10px;
+      align-self: center
+    }
+
+    #heatmap .hm-d {
+      text-align: right;
+      padding-right: 6px
+    }
+
+    #heatmap .hm-cell {
+      height: 28px;
+      border-radius: 2px;
+      background: var(--panel2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #fff;
+      font-weight: 600
+    }
+
+    /* ── Tags ── */
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 500
+    }
+
+    .tag.warn {
+      background: rgba(214, 168, 90, .16);
+      color: var(--warn)
+    }
+
+    .tag.bad {
+      background: rgba(204, 112, 102, .16);
+      color: var(--danger)
+    }
+
+    .tag.good {
+      background: rgba(128, 191, 168, .16);
+      color: var(--accent2)
+    }
+
+    .tag.info {
+      background: rgba(155, 176, 199, .16);
+      color: var(--accent)
+    }
+
+    .note {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin: 10px 0 0;
+      line-height: 1.55
+    }
+
+    .anomaly-row {
+      padding: 8px 10px;
+      background: rgba(204, 112, 102, .08);
+      border-left: 3px solid var(--danger);
+      border-radius: 4px;
+      margin-bottom: 6px;
+      font-size: 12.5px
+    }
+
+    .anomaly-row.warn {
+      background: rgba(214, 168, 90, .08);
+      border-left-color: var(--warn)
+    }
+
+    .anomaly-row.info {
+      background: rgba(155, 176, 199, .08);
+      border-left-color: var(--accent)
+    }
+
+    .muted-link {
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer
+    }
+
+    .muted-link:hover {
+      text-decoration: underline
+    }
+
+    /* ── Modal ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      z-index: 100;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto
+    }
+
+    .modal-bg.active {
+      display: flex
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      max-width: 1100px;
+      width: 100%;
+      padding: 24px;
+      position: relative
+    }
+
+    .modal .close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .15s
+    }
+
+    .modal .close:hover {
+      color: var(--text);
+      border-color: var(--accent)
+    }
+
+    /* ── Cluster cards ── */
+    .cluster-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 12px
+    }
+
+    .cluster-card {
+      padding: 16px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--line)
+    }
+
+    .cluster-card h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .cluster-meta {
+      display: flex;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      flex-wrap: wrap
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .mini-stat {
+      padding: 10px;
+      border-radius: 6px;
+      background: var(--panel2);
+      border: 1px solid var(--line)
+    }
+
+    .mini-value {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 2px
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500
+    }
+
+    /* ── Split panel ── */
+    .split-panel {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: start
+    }
+
+    .split-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .split-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px
+    }
+
+    .split-stat {
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--line)
+    }
+
+    .split-stat-label {
+      font-size: 10.5px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      margin-bottom: 2px
+    }
+
+    .split-stat-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    /* ── Footer ── */
+    .foot {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11.5px;
+      text-align: center
+    }
+
+    /* ── Narrative layout ── */
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 10px 0 16px
+    }
+
+    @media(max-width:860px) {
+      .story-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .story-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .story-card .sk {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      font-weight: 600
+    }
+
+    .story-card .st {
+      font-size: 16px;
+      font-weight: 650;
+      color: var(--text);
+      line-height: 1.25;
+      letter-spacing: -.01em
+    }
+
+    .story-card .sc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .panel-grid {
+      display: grid;
+      gap: 14px;
+      margin: 14px 0
+    }
+
+    .panel-grid.two {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .panel-grid.three {
+      grid-template-columns: 1fr 1fr 1fr
+    }
+
+    .panel-grid .full {
+      grid-column: 1/-1
+    }
+
+    @media(max-width:980px) {
+
+      .panel-grid.two,
+      .panel-grid.three {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0
+    }
+
+    .panel .sk {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 2px
+    }
+
+    .panel .st {
+      font-size: 14px;
+      font-weight: 600;
+      color: #d4dbe5;
+      margin: 0 0 4px;
+      line-height: 1.3
+    }
+
+    .panel .sc {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin: 0 0 10px;
+      line-height: 1.5
+    }
+
+    .panel .chart-wrap {
+      margin-top: auto
+    }
+
+    .panel table.simple {
+      margin-top: 6px
+    }
+
+    .panel .toggle {
+      align-self: flex-end;
+      margin-top: 6px
+    }
+
+    .ask-ai-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(155, 176, 199, .12);
+      border: 1px solid rgba(155, 176, 199, .3);
+      color: var(--accent);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .2s;
+      z-index: 5;
+      font-weight: 600;
+      letter-spacing: .04em;
+      pointer-events: none;
+      backdrop-filter: blur(4px)
+    }
+
+    .panel:hover .ask-ai-badge,
+    .chart-wrap:hover .ask-ai-badge {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .ask-ai-badge:hover {
+      background: rgba(155, 176, 199, .25);
+      border-color: var(--accent)
+    }
+
+    /* ── Chat ── */
+    .chat-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 90;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #2a3344;
+      border: 1px solid var(--line);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .4)
+    }
+
+    .chat-btn:hover {
+      background: #3d485b;
+      border-color: #5f6f86;
+      transform: scale(1.05)
+    }
+
+    .chat-btn.active {
+      background: #cc7066;
+      border-color: #cc7066
+    }
+
+    .chat-panel {
+      position: fixed;
+      bottom: 84px;
+      right: 24px;
+      z-index: 89;
+      width: 400px;
+      max-width: calc(100vw - 48px);
+      height: 560px;
+      max-height: calc(100vh - 120px);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+      overflow: hidden
+    }
+
+    .chat-panel.active {
+      display: flex
+    }
+
+    .chat-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    .chat-head h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .chat-head .close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px
+    }
+
+    .chat-head .close-btn:hover {
+      color: var(--text);
+      background: var(--panel2)
+    }
+
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .chat-msg {
+      max-width: 88%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.55
+    }
+
+    .chat-msg.user {
+      background: #2a3344;
+      color: var(--text);
+      align-self: flex-end;
+      border-bottom-right-radius: 2px
+    }
+
+    .chat-msg.bot {
+      background: var(--bg);
+      color: #d4dbe5;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+      border: 1px solid var(--line)
+    }
+
+    .chat-msg.bot code {
+      background: #1b2230;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--accent)
+    }
+
+    .chat-msg.bot strong {
+      color: var(--text)
+    }
+
+    .chat-foot {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0
+    }
+
+    .chat-foot textarea {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      min-height: 36px;
+      max-height: 120px;
+      line-height: 1.4;
+      overflow-y: auto;
+      box-sizing: border-box
+    }
+
+    .chat-foot textarea:focus {
+      border-color: #6a7b92
+    }
+
+    .chat-foot .send-btn {
+      background: #3a4456;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: .15s;
+      flex-shrink: 0
+    }
+
+    .chat-foot .send-btn:hover {
+      background: #4a5569
+    }
+
+    .chat-foot .send-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .chat-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      align-self: flex-start
+    }
+
+    .chat-loading .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: chatPulse 1s ease-in-out infinite
+    }
+
+    .chat-loading .dot:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .chat-loading .dot:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes chatPulse {
+
+      0%,
+      100% {
+        opacity: .3
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    .chat-welcome {
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6
+    }
+
+    .chat-welcome strong {
+      color: var(--text)
+    }
+
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border-radius: 3px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--muted)
+    }
+
+    @media(max-width:768px) {
+      .container {
+        padding: 8px 12px 40px
+      }
+
+      .filter-bar {
+        top: 0
+      }
+
+      .appbar-meta .badge {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div><span id="loading-text">Loading 64,570 tickets...</span>
+  </div>
+
+  <!-- App Bar -->
+  <div class="appbar" id="appbar">
+    <div class="appbar-inner">
+      <div class="brand-mark">
+        <img src="devyani_logo.svg" alt="Devyani International" style="height:36px;width:auto">
+      </div>
+      <div class="appbar-spacer"></div>
+
+    </div>
+  </div>
+
+  <div class="container" id="app-container">
+
+    <div class="page-head">
+      <div>
+        <div class="pcrumb">Operations / Maintenance Intelligence</div>
+        <h1>Maintenance Operations &mdash; Q1 2026 Review</h1>
+      </div>
+      <div class="window-tag">
+        <span>Window: <b id="hdr-date-range">Jan 01 &ndash; Apr 30, 2026</b></span>
+        <span>Records: <b id="hdr-record-count">64,570</b></span>
+        <span>Source: <b>PCSI Helpdesk</b></span>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="f-group">
+        <label>Brand</label>
+        <div id="f-brand" class="chip-row"></div>
+      </div>
+      <div class="f-group">
+        <label>Month</label>
+        <div id="f-month" class="chip-row"></div>
+      </div>
+      <div class="f-group">
+        <label>Priority</label>
+        <div id="f-priority" class="chip-row"></div>
+      </div>
+      <div class="f-group">
+        <label>Grade</label>
+        <div id="f-grade" class="chip-row"></div>
+      </div>
+      <div class="f-group" style="border-right:none">
+        <label>Region</label>
+        <select id="f-region">
+          <option value="">All regions</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-bar"
+      style="border-top:none;border-radius:0 0 12px 12px;margin-top:-14px;padding:12px 20px;gap:12px;align-items:center">
+      <div class="f-group" style="border-right:none;flex:1">
+        <label>Search</label>
+        <input id="f-search" type="text" placeholder="Ticket, store, issue..." style="width:100%" />
+      </div>
+      <button class="btn-reset" id="f-reset">Reset</button>
+      <div class="filter-summary" id="filter-summary">All 64,570 tickets</div>
+    </div>
+
+    <!-- KPI grid -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <!-- Tabs -->
+    <div class="tabs" id="tabs"></div>
+
+    <!-- ======== OVERVIEW ======== -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="story-grid">
+        <div class="story-card">
+          <div class="sk">Ticket Flow</div>
+          <div class="st" id="ov-flow"></div>
+          <div class="sc" id="ov-flow-sc"></div>
+        </div>
+        <div class="story-card">
+          <div class="sk">Cost Pressure</div>
+          <div class="st" id="ov-cost"></div>
+          <div class="sc" id="ov-cost-sc"></div>
+        </div>
+        <div class="story-card">
+          <div class="sk">Urgency Mix</div>
+          <div class="st" id="ov-urgency"></div>
+          <div class="sc" id="ov-urgency-sc"></div>
+        </div>
+      </div>
+
+      <div class="panel-grid two">
+        <div class="panel">
+          <div class="sk">Volume</div>
+          <div class="st">Monthly ticket volume by brand</div>
+          <div class="sc">How each brand's maintenance volume trends month over month. Stacked bars reveal shifts in
+            workload share.</div>
+          <div class="chart-wrap tall" id="ch-monthly-brand_chart"><canvas id="ch-monthly-brand"></canvas></div>
+          <div class="table-wrap" id="ch-monthly-brand_table"></div>
+          <span class="toggle" data-toggle="ch-monthly-brand">Table view</span>
+        </div>
+        <div class="panel">
+          <div class="sk">Share</div>
+          <div class="st">Brand share of all tickets</div>
+          <div class="sc">Click any segment to filter the entire dashboard to that brand.</div>
+          <div class="chart-wrap tall" id="ch-brand-pie_chart"><canvas id="ch-brand-pie"></canvas></div>
+          <div class="table-wrap" id="ch-brand-pie_table"></div>
+          <span class="toggle" data-toggle="ch-brand-pie">Table view</span>
+        </div>
+      </div>
+
+      <div class="panel-grid two">
+        <div class="panel">
+          <div class="sk">Priority Mix</div>
+          <div class="st">Priority distribution</div>
+          <div class="sc">A = critical (4h SLA), D = low urgency (7 days). Click a bar to filter by priority.</div>
+          <div class="chart-wrap" id="ch-priority_chart"><canvas id="ch-priority"></canvas></div>
+          <div class="table-wrap" id="ch-priority_table"></div>
+          <span class="toggle" data-toggle="ch-priority" ">Table view</span>
+    </div>
+    <div class=" panel">
+            <div class="sk">Geography</div>
+            <div class="st">Top 12 regions by tickets</div>
+            <div class="sc">Regions with the highest reporting volume. Click any bar to isolate that region.</div>
+            <div class="chart-wrap" id="ch-regions_chart"><canvas id="ch-regions"></canvas></div>
+            <div class="table-wrap" id="ch-regions_table"></div>
+            <span class="toggle" data-toggle="ch-regions" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+              <div class="panel full">
+                <div class="sk">Temporal Patterns</div>
+                <div class="st">Reporting heatmap &mdash; weekday &times; hour</div>
+                <div class="sc">When tickets are filed. Darker cells = more tickets opened in that time slot. Helps
+                  identify peak reporting windows and after-hours filing.</div>
+                <div id="heatmap" style="margin-top:4px"></div>
+              </div>
+        </div>
+
+        <div class="panel-grid three">
+          <div class="panel">
+            <div class="sk">Top Stores</div>
+            <div class="st">Highest-volume stores</div>
+            <div class="sc">The 15 stores filing the most maintenance tickets this period.</div>
+            <div class="table-wrap active" style="overflow:auto;max-height:300px">
+              <table class="simple" id="tbl-top-stores">
+                <thead>
+                  <tr>
+                    <th>Store</th>
+                    <th class="num">Tickets</th>
+                    <th class="num">%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="sk">Top Categories</div>
+            <div class="st">Most-reported issue categories</div>
+            <div class="sc">The 15 most common issue categories across all stores.</div>
+            <div class="table-wrap active" style="overflow:auto;max-height:300px">
+              <table class="simple" id="tbl-top-cats">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th class="num">Tickets</th>
+                    <th class="num">%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="sk">Weekly Trend</div>
+            <div class="st">Ticket volume by week</div>
+            <div class="sc">Short-term trajectory. Upward slope may signal growing workload.</div>
+            <div class="chart-wrap" style="margin-top:4px"><canvas id="ch-weekly-trend"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAT & SLA ======== -->
+      <div class="tab-panel" id="tab-tat">
+        <div class="panel-grid two">
+          <div class="panel">
+            <div class="sk">Turnaround</div>
+            <div class="st">TAT distribution buckets</div>
+            <div class="sc">How resolution times are clustered — from same-day (≤4h) to prolonged (&gt;2 weeks).</div>
+            <div class="chart-wrap tall" id="ch-tat-buckets_chart"><canvas id="ch-tat-buckets"></canvas></div>
+            <div class="table-wrap" id="ch-tat-buckets_table"></div>
+            <span class="toggle" data-toggle="ch-tat-buckets" ">Table view</span>
+    </div>
+    <div class=" panel">
+              <div class="sk">Brand Comparison</div>
+              <div class="st">Median TAT by brand (hours)</div>
+              <div class="sc">Which brands resolve fastest. Mean is shown for reference; median resists outlier
+                distortion.</div>
+              <div class="chart-wrap tall" id="ch-tat-brand_chart"><canvas id="ch-tat-brand"></canvas></div>
+              <div class="table-wrap" id="ch-tat-brand_table"></div>
+              <span class="toggle" data-toggle="ch-tat-brand" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+                <div class="panel">
+                  <div class="sk">SLA Compliance</div>
+                  <div class="st">SLA breach by priority</div>
+                  <div class="sc">Resolve targets: A=4h, B=12h, C=24h, D=7 days. A high breach rate in D suggests
+                    systemic delays.</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+                    <div>
+                      <div class="chart-wrap short"><canvas id="ch-sla-compliance"></canvas></div>
+                    </div>
+                    <div>
+                      <table class="simple" id="tbl-sla"></table>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="sk">By Priority</div>
+                  <div class="st">TAT by priority (hours)</div>
+                  <div class="sc">Median and mean resolution times broken down by criticality level.</div>
+                  <div class="chart-wrap" id="ch-tat-pri_chart"><canvas id="ch-tat-pri"></canvas></div>
+                  <div class="table-wrap" id="ch-tat-pri_table"></div>
+                  <span class="toggle" data-toggle="ch-tat-pri" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+                    <div class="panel full">
+                      <div class="sk">Trend</div>
+                      <div class="st">TAT trend by month (median &amp; mean)</div>
+                      <div class="sc">Are resolution times improving or degrading over the period? The gap between
+                        median and mean indicates skew from slow outliers.</div>
+                      <div class="chart-wrap tall" id="ch-tat-monthly_chart"><canvas id="ch-tat-monthly"></canvas></div>
+                      <div class="table-wrap" id="ch-tat-monthly_table"></div>
+                      <span class="toggle" data-toggle="ch-tat-monthly" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+                        <div class="panel">
+                          <div class="sk">Bottlenecks</div>
+                          <div class="st">Slowest categories (median TAT, min 50 tickets)</div>
+                          <div class="sc">Issue categories with the longest resolution times — potential process
+                            bottlenecks.</div>
+                          <div class="table-wrap active" style="overflow:auto;max-height:340px">
+                            <table class="simple" id="tbl-slow-cats">
+                              <thead>
+                                <tr>
+                                  <th>Category</th>
+                                  <th class="num">Median TAT (h)</th>
+                                  <th class="num">Tickets</th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="sk">Strengths</div>
+                          <div class="st">Fastest categories (median TAT, min 50 tickets)</div>
+                          <div class="sc">Well-performing categories where resolution times are shortest.</div>
+                          <div class="table-wrap active" style="overflow:auto;max-height:340px">
+                            <table class="simple" id="tbl-fast-cats">
+                              <thead>
+                                <tr>
+                                  <th>Category</th>
+                                  <th class="num">Median TAT (h)</th>
+                                  <th class="num">Tickets</th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======== ASSETS & FAILURES ======== -->
+                <div class="tab-panel" id="tab-assets">
+                  <div class="panel-grid two">
+                    <div class="panel">
+                      <div class="sk">Failure Modes</div>
+                      <div class="st">Top ticket types (failure modes)</div>
+                      <div class="sc">The most commonly logged issue categories across all stores.</div>
+                      <div class="table-wrap active" style="overflow:auto;max-height:380px">
+                        <table class="simple" id="tbl-types">
+                          <thead>
+                            <tr>
+                              <th>Ticket Type</th>
+                              <th class="num">Tickets</th>
+                              <th class="num">%</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="panel">
+                      <div class="sk">Hotspots</div>
+                      <div class="st">Top failure points (asset &middot; category)</div>
+                      <div class="sc">The most frequent asset&ndash;category combinations generating tickets.</div>
+                      <div class="table-wrap active" style="overflow:auto;max-height:380px">
+                        <table class="simple" id="tbl-failure-points">
+                          <thead>
+                            <tr>
+                              <th>Asset · Category</th>
+                              <th class="num">Tickets</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="panel-grid two">
+                    <div class="panel full">
+                      <div class="sk">Trend</div>
+                      <div class="st">Top 8 assets &mdash; monthly trend</div>
+                      <div class="sc">How the most-reported assets trend across months. Spikes may indicate seasonal
+                        failures or rollout issues.</div>
+                      <div class="chart-wrap tall" id="ch-asset-trend_chart"><canvas id="ch-asset-trend"></canvas></div>
+                      <div class="table-wrap" id="ch-asset-trend_table"></div>
+                      <span class="toggle" data-toggle="ch-asset-trend" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+                        <div class="panel">
+                          <div class="sk">Chronic Stores</div>
+                          <div class="st">Stores with the most tickets</div>
+                          <div class="sc">High-issue stores that may need focused maintenance programs.</div>
+                          <div class="table-wrap active" style="overflow:auto;max-height:340px">
+                            <table class="simple" id="tbl-chronic">
+                              <thead>
+                                <tr>
+                                  <th>Store</th>
+                                  <th class="num">Tickets</th>
+                                  <th class="num">Avg/month</th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="sk">Recurrences</div>
+                          <div class="st">Recurring failures (same store+asset within 14d)</div>
+                          <div class="sc">Assets that fail repeatedly — the same asset at the same store with gaps of 14
+                            days or fewer.</div>
+                          <div id="grid-recurring"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel-grid two">
+                      <div class="panel full">
+                        <div class="sk">Directory</div>
+                        <div class="st">Asset directory</div>
+                        <div class="sc">Browse all assets. Click any row to open the per-asset deep-dive view with
+                          trends, failure modes, and store breakdown.</div>
+                        <div id="grid-asset-dir" style="margin-top:4px"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ======== SPEND ======== -->
+                  <div class="tab-panel" id="tab-spend">
+                    <div class="panel-grid two">
+                      <div class="panel">
+                        <div class="sk">Cost Trend</div>
+                        <div class="st">Monthly spend</div>
+                        <div class="sc">Total spend trend across all brands. Hover any bar for pricing details.</div>
+                        <div class="chart-wrap tall" id="ch-monthly-spend_chart"><canvas id="ch-monthly-spend"></canvas>
+                        </div>
+                        <div class="table-wrap" id="ch-monthly-spend_table"></div>
+                        <span class="toggle" data-toggle="ch-monthly-spend" ">Table view</span>
+    </div>
+    <div class=" panel">
+                          <div class="sk">Share of Wallet</div>
+                          <div class="st">Spend share by brand</div>
+                          <div class="sc">Which brands account for the largest share of maintenance spend.</div>
+                          <div class="chart-wrap tall" id="ch-spend-brand_chart"><canvas id="ch-spend-brand"></canvas>
+                          </div>
+                          <div class="table-wrap" id="ch-spend-brand_table"></div>
+                          <span class="toggle" data-toggle="ch-spend-brand" ">Table view</span>
+    </div>
+  </div>
+
+  <div class=" panel-grid two">
+                            <div class="panel">
+                              <div class="sk">Brand &times; Category</div>
+                              <div class="st">Top spend by brand &amp; category</div>
+                              <div class="sc">The highest-spend brand&ndash;category intersections driving maintenance
+                                cost.</div>
+                              <div class="table-wrap active" style="overflow:auto;max-height:400px">
+                                <table class="simple" id="tbl-spend-bc">
+                                  <thead>
+                                    <tr>
+                                      <th>Brand</th>
+                                      <th>Category</th>
+                                      <th class="num">Spend</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody></tbody>
+                                </table>
+                              </div>
+                            </div>
+                            <div class="panel">
+                              <div class="sk">Big Tickets</div>
+                              <div class="st">Largest individual tickets</div>
+                              <div class="sc">The 20 highest-value single tickets in this period.</div>
+                              <div class="table-wrap active" style="overflow:auto;max-height:400px">
+                                <table class="simple" id="tbl-big-tickets">
+                                  <thead>
+                                    <tr>
+                                      <th>Ticket</th>
+                                      <th>Brand</th>
+                                      <th>Asset</th>
+                                      <th>Store</th>
+                                      <th class="num">Amount</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody></tbody>
+                                </table>
+                              </div>
+                            </div>
+                      </div>
+
+                      <div class="panel-grid three">
+                        <div class="panel">
+                          <div class="sk">Cost vs Volume</div>
+                          <div class="st">Ticket count vs spend per store</div>
+                          <div class="sc">Each dot is a store. High in both dimensions = priority candidates for
+                            cost-reduction programs.</div>
+                          <div class="chart-wrap" style="margin-top:4px"><canvas id="ch-spend-scatter"></canvas></div>
+                        </div>
+                        <div class="panel">
+                          <div class="sk">Assets</div>
+                          <div class="st">Top assets by spend</div>
+                          <div class="sc">Costliest assets to maintain this period.</div>
+                          <div class="table-wrap active" style="overflow:auto;max-height:340px">
+                            <table class="simple" id="tbl-spend-assets">
+                              <thead>
+                                <tr>
+                                  <th>Asset</th>
+                                  <th class="num">Spend</th>
+                                  <th class="num">Tickets</th>
+                                  <th class="num">Avg/ticket</th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="sk">Stores</div>
+                          <div class="st">Top spending stores</div>
+                          <div class="sc">Stores with the highest maintenance spend.</div>
+                          <div class="table-wrap active" style="overflow:auto;max-height:340px">
+                            <table class="simple" id="tbl-spend-stores">
+                              <thead>
+                                <tr>
+                                  <th>Store</th>
+                                  <th class="num">Spend</th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ======== TEAMS ======== -->
+                    <div class="tab-panel" id="tab-teams">
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">Performance</div>
+                          <div class="st">Maintenance team scorecard</div>
+                          <div class="sc">Aggregate metrics for each maintenance team — volume, resolution speed, SLA
+                            compliance, and cost.</div>
+                          <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:12px;margin-top:4px">
+                            <div class="chart-wrap short"><canvas id="ch-team-tat"></canvas></div>
+                            <div id="grid-team"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">Management</div>
+                          <div class="st">Market &amp; Area Manager scorecard</div>
+                          <div class="sc">Manager-level operational view. Sort any column to rank performance.</div>
+                          <div id="grid-manager" style="margin-top:4px"></div>
+                        </div>
+                      </div>
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">Individuals</div>
+                          <div class="st">Assignee leaderboard (min. 50 tickets)</div>
+                          <div class="sc">Individual technician performance ranked by ticket volume and resolution
+                            efficiency.</div>
+                          <div id="grid-assignee" style="margin-top:4px"></div>
+                        </div>
+                      </div>
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">External</div>
+                          <div class="st">Vendor scorecard &mdash; weighted performance ranking</div>
+                          <div class="sc">Score = 0.4&times;TAT efficiency + 0.3&times;first-time fix + 0.2&times;cost
+                            efficiency + 0.1&times;on-time rate. Min. 10 tickets. Higher is better.</div>
+                          <div id="grid-vendor" style="margin-top:4px"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ======== GRADE & PRIORITY ======== -->
+                    <div class="tab-panel" id="tab-grade">
+                      <div class="panel-grid two">
+                        <div class="panel">
+                          <div class="sk">Reference</div>
+                          <div class="st">SLA targets</div>
+                          <div class="sc">Resolve obligations by priority level. A=4h (critical), B=12h, C=24h, D=7
+                            days.</div>
+                          <table class="simple" style="margin-top:4px">
+                            <thead>
+                              <tr>
+                                <th>Priority</th>
+                                <th>Description</th>
+                                <th class="num">Response</th>
+                                <th class="num">Resolve</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><span class="tag bad">A</span></td>
+                                <td>Critical</td>
+                                <td class="num">2h</td>
+                                <td class="num"><strong>4h</strong></td>
+                              </tr>
+                              <tr>
+                                <td><span class="tag warn">B</span></td>
+                                <td>Medium</td>
+                                <td class="num">8h</td>
+                                <td class="num"><strong>12h</strong></td>
+                              </tr>
+                              <tr>
+                                <td><span class="tag info">C</span></td>
+                                <td>Normal</td>
+                                <td class="num">12h</td>
+                                <td class="num"><strong>24h</strong></td>
+                              </tr>
+                              <tr>
+                                <td><span class="tag good">D</span></td>
+                                <td>Low urgency</td>
+                                <td class="num">48h</td>
+                                <td class="num"><strong>7d</strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="panel">
+                          <div class="sk">Volume</div>
+                          <div class="st">Tickets by priority vs asset grade</div>
+                          <div class="sc">Left: how tickets are filed by priority. Right: distribution by store health
+                            grade.</div>
+                          <div class="split-charts"
+                            style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+                            <div>
+                              <div class="chart-wrap short"><canvas id="ch-vol-priority"></canvas></div>
+                            </div>
+                            <div>
+                              <div class="chart-wrap short"><canvas id="ch-vol-grade"></canvas></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">Alignment</div>
+                          <div class="st">Priority vs Grade &mdash; mismatch matrix</div>
+                          <div class="sc">Diagonal = ticket priority matches its store's health grade. Off-diagonal
+                            indicates misalignment — e.g., a critical ticket (A) at an A-grade store vs a routine ticket
+                            (D) at a D-grade store that may warrant higher urgency.</div>
+                          <div class="table-wrap active" style="margin-top:4px" id="grid-pri-vs-grade"></div>
+                        </div>
+                      </div>
+
+                      <div class="panel-grid two">
+                        <div class="panel full">
+                          <div class="sk">Trend</div>
+                          <div class="st">Grade distribution by month</div>
+                          <div class="sc">How store health grades shift over time — improving (more A/B) or degrading
+                            (more C/D).</div>
+                          <div class="chart-wrap tall" id="ch-grade-trend_chart"><canvas id="ch-grade-trend"></canvas>
+                          </div>
+                          <div class="table-wrap" id="ch-grade-trend_table"></div>
+                          <span class="toggle" data-toggle="ch-grade-trend" ">Table view</span>
+    </div>
+  </div>
+</div>
+
+<!-- ======== ANOMALIES ======== -->
+<div class=" tab-panel" id="tab-anomalies">
+                            <div class="panel-grid two">
+                              <div class="panel full">
+                                <div class="sk">Store Outliers</div>
+                                <div class="st">Outlier stores — latest month TAT vs brand median</div>
+                                <div class="sc">Stores where median TAT exceeds 2× the brand median in the latest
+                                  filtered month (min 10 tickets).</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+                                  <div class="chart-wrap short"><canvas id="ch-anom-stores-bar"></canvas></div>
+                                  <div id="anom-stores"></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel-grid two">
+                              <div class="panel full">
+                                <div class="sk">Volume Spikes</div>
+                                <div class="st">Category volume spikes — latest month vs prior baseline</div>
+                                <div class="sc">Categories where latest-month volume exceeds 1.5× the prior-month
+                                  average (min 50 tickets).</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+                                  <div class="chart-wrap short"><canvas id="ch-anom-cats-bar"></canvas></div>
+                                  <div id="anom-cats"></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="panel-grid two">
+                              <div class="panel full">
+                                <div class="sk">Repeats</div>
+                                <div class="st">24-hour repeats — same store + asset reopened within a day</div>
+                                <div class="sc">Tickets at the same store for the same asset filed within 24 hours of a
+                                  prior closure — indicative of incomplete fixes.</div>
+                                <div id="anom-repeat24" style="margin-top:4px"></div>
+                              </div>
+                            </div>
+                            <div class="panel-grid two">
+                              <div class="panel full">
+                                <div class="sk">Statistical</div>
+                                <div class="st">Statistical anomalies — z-score based (volume, spend, TAT)</div>
+                                <div class="sc">Auto-detected spikes from monthly z-score comparisons across brand,
+                                  region, and asset family. Severity in σ units.</div>
+                                <div id="anom-zscore" style="margin-top:4px"></div>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- ======== AI & PREDICTIVE INSIGHTS ======== -->
+                        <div class="tab-panel" id="tab-ai">
+                          <div class="panel-grid two">
+                            <div class="panel">
+                              <div class="sk">Risk Model</div>
+                              <div class="st">Risk score distribution</div>
+                              <div class="sc">Random Forest model trained on historical failure patterns. High-risk
+                                (≥70) store-asset pairs need proactive inspection.</div>
+                              <div class="chart-wrap short" style="margin-top:auto"><canvas id="ai-risk-dist"></canvas>
+                              </div>
+                            </div>
+                            <div class="panel">
+                              <div class="sk">Drivers</div>
+                              <div class="st">Feature importance (Random Forest)</div>
+                              <div class="sc">Which variables most influence the risk prediction. Longer bars = stronger
+                                predictors of future failure.</div>
+                              <div class="chart-wrap short" style="margin-top:auto"><canvas id="ai-features"></canvas>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="panel-grid two">
+                            <div class="panel full">
+                              <div class="sk">Hot List</div>
+                              <div class="st">Highest-risk store&ndash;asset combinations</div>
+                              <div class="sc">Predicted by Random Forest. Score ≥70 = high risk — these combinations are
+                                most likely to generate tickets in the coming period.</div>
+                              <div id="grid-risks" style="margin-top:4px"></div>
+                            </div>
+                          </div>
+
+                          <div class="panel-grid two">
+                            <div class="panel full">
+                              <div class="sk">Segmentation</div>
+                              <div class="st">Store clusters &mdash; K-means behavioral profiles</div>
+                              <div class="sc">Groups stores by volume, cost, TAT, criticality, repeat rate, and
+                                asset-family mix. Each cluster represents a distinct operational profile.</div>
+                              <div id="cluster-grid" style="margin-top:4px"></div>
+                            </div>
+                          </div>
+
+                          <div class="panel-grid two">
+                            <div class="panel full">
+                              <div class="sk">Region Profile</div>
+                              <div class="st">Regional performance radar</div>
+                              <div class="sc">Six regions compared across 5 normalized metrics. Larger area = better
+                                overall performance. Hover for per-metric values.</div>
+                              <div class="chart-wrap tall"><canvas id="ai-radar"></canvas></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="foot">&copy; 2026 Devyani International Limited &middot; Maintenance Intelligence
+                          Platform &middot; Internal use only</div>
+                      </div>
+
+                      <!-- Chat -->
+                      <button class="chat-btn" id="chat-btn" title="Ask AI about this data"><img src="chat-leaf.png"
+                          alt="Ask AI" style="width:28px;height:28px;object-fit:contain;padding-left:6px"></button>
+                      <div class="chat-panel" id="chat-panel">
+                        <div class="chat-head">
+                          <h3>Ask Devyani Intelligence</h3>
+                          <button class="close-btn" id="chat-close">&times;</button>
+                        </div>
+                        <div class="chat-body" id="chat-body">
+                          <div class="chat-welcome" id="chat-welcome">
+                            <strong>Ask anything about your maintenance data.</strong><br><br>
+                            <span style="display:block;margin:6px 0">Examples:</span>
+                            <span style="display:block;margin:4px 0;opacity:.8">&ldquo;Which store has the worst
+                              TAT?&rdquo;</span>
+                            <span style="display:block;margin:4px 0;opacity:.8">&ldquo;Why is KFC spend so
+                              high?&rdquo;</span>
+                            <span style="display:block;margin:4px 0;opacity:.8">&ldquo;What anomalies should I look
+                              at?&rdquo;</span>
+                            <span style="display:block;margin:4px 0;opacity:.8">&ldquo;Summarize this dashboard for
+                              me.&rdquo;</span>
+                          </div>
+                        </div>
+                        <div class="chat-foot">
+                          <textarea id="chat-input" placeholder="Ask a question..." autocomplete="off"></textarea>
+                          <button class="send-btn" id="chat-send">Send</button>
+                        </div>
+                      </div>
+
+                      <!-- Asset Modal -->
+                      <div class="modal-bg" id="asset-modal">
+                        <div class="modal">
+                          <div class="close" id="asset-modal-close">&times;</div>
+                          <h2 id="am-title" style="border-left:none;padding-left:0;margin-top:0">Asset Deep Dive</h2>
+                          <div class="kpi-grid" id="am-kpis"></div>
+                          <div class="row">
+                            <div class="card col-6">
+                              <h3>Monthly trend</h3>
+                              <div class="chart-wrap"><canvas id="am-trend"></canvas></div>
+                            </div>
+                            <div class="card col-6">
+                              <h3>Top failure modes</h3>
+                              <div class="chart-wrap"><canvas id="am-types"></canvas></div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="card col-6">
+                              <h3>Top stores reporting this asset</h3>
+                              <table class="simple" id="am-stores"></table>
+                            </div>
+                            <div class="card col-6">
+                              <h3>TAT distribution</h3>
+                              <div class="chart-wrap"><canvas id="am-tat"></canvas></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <script>
+                        // ================================================================
+                        // EAMOT Maintenance Intelligence Platform v2.0
+                        // ================================================================
+
+                        // ---------- Auth (disabled for internal use) ----------
+
+
+                        // ---------- State ----------
+                        var RAW = null, TICKETS = [], FILTERED = [];
+                        var FILTER = { brands: new Set(), months: new Set(), priorities: new Set(), grades: new Set(), region: '', search: '' };
+                        var charts = {}, grids = {};
+                        var palette = ['#638ecc', '#6fc0a0', '#d6a85a', '#cc7066', '#b47ad9', '#57c2bf', '#e68778', '#c99a3a', '#6db890', '#7a98c9', '#9a78cc', '#c475b5'];
+                        var brandColors = {}, priColors = { A: '#cc7066', B: '#d6a85a', C: '#638ecc', D: '#6fc0a0' }, gradeColors = { A: '#6fc0a0', B: '#638ecc', C: '#d6a85a', D: '#cc7066', '?': '#7d8898' };
+                        var SLA_TARGETS = { A: 4, B: 12, C: 24, D: 168 }, SLA_LABEL = { A: '4 h', B: '12 h', C: '24 h', D: '7 days' };
+                        var booted = false;
+
+                        // ---------- Formatting ----------
+                        var nf = new Intl.NumberFormat('en-IN');
+                        function fmtN(n) { return n == null || isNaN(n) ? '-' : nf.format(Math.round(n)) }
+                        function fmtPct(n, d) { d = d || 1; return n == null ? '-' : (n * 100).toFixed(d) + '%' }
+                        function fmtINR(v) { if (v == null || isNaN(v)) return '-'; if (v >= 1e7) return '₹' + (v / 1e7).toFixed(2) + 'Cr'; if (v >= 1e5) return '₹' + (v / 1e5).toFixed(2) + 'L'; if (v >= 1e3) return '₹' + nf.format(Math.round(v)); return '₹' + Math.round(v) }
+                        function fmtINRfull(v) { return v == null || isNaN(v) ? '-' : '₹' + nf.format(Math.round(v)) }
+                        function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '\x26': '&amp;', '\x3c': '&lt;', '\x3e': '&gt;', '\x22': '&quot;', "'": '&#39;' }[c] }) }
+
+                        // ---------- Helpers ----------
+                        function median(arr) { if (!arr.length) return 0; var s = arr.slice().sort(function (a, b) { return a - b }), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2 }
+                        function mean(arr) { return arr.length ? arr.reduce(function (a, b) { return a + b }, 0) / arr.length : 0 }
+                        function pct(n, d) { return d ? n / d * 100 : 0 }
+                        function quantile(arr, q) { if (!arr.length) return 0; var s = arr.slice().sort(function (a, b) { return a - b }), pos = (s.length - 1) * q, base = Math.floor(pos), rest = pos - base; return s[base + 1] !== undefined ? s[base] + rest * (s[base + 1] - s[base]) : s[base] }
+                        function brandColor(name) { if (!brandColors[name]) brandColors[name] = palette[Object.keys(brandColors).length % palette.length]; return brandColors[name] }
+                        function countBy(indices, keyFn) { var c = {}; indices.forEach(function (i) { var k = keyFn(i); c[k] = (c[k] || 0) + 1 }); return c }
+                        function topN(obj, n) { return Object.entries(obj).sort(function (a, b) { return b[1] - a[1] }).slice(0, n) }
+                        function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id] } }
+                        function mkChart(id, cfg) { destroyChart(id); var ctx = document.getElementById(id); if (!ctx) return; charts[id] = new Chart(ctx, cfg) }
+                        function toggleChartTable(key) { var c = document.getElementById(key + '_chart'), tb = document.getElementById(key + '_table'), tg = document.querySelector('.toggle[data-toggle="' + key + '"]'); if (!c || !tg) return; var showing = tb.classList.contains('active'); tb.classList.toggle('active'); c.classList.toggle('hidden'); tg.textContent = showing ? 'Table' : 'Chart' }
+
+                        // ---------- Grid.js wrapper ----------
+                        function mkGrid(elId, columns, data, opts) {
+                          if (grids[elId]) { grids[elId].destroy() }
+                          var el = document.getElementById(elId); if (!el) return; el.innerHTML = ''; opts = opts || {}; grids[elId] = new gridjs.Grid({ columns: columns, data: data, sort: opts.sort !== false, search: opts.search !== false, pagination: opts.pagination || { limit: 10 }, style: { table: { 'font-size': '12px' } } }).render(el)
+                        }
+
+                        // ---------- Chart defaults ----------
+                        Chart.defaults.color = '#9aa4b2'; Chart.defaults.borderColor = '#272e39'; Chart.defaults.font.family = 'Plus Jakarta Sans,sans-serif'; Chart.defaults.font.size = 11;
+
+                        // ---------- Data load ----------
+                        function materialize(ticks) { var cols = ticks.columns, data = ticks.data, out = []; for (var i = 0; i < data[cols[0]].length; i++) { var row = {}; cols.forEach(function (c) { row[c] = data[c][i] }); row.tatHours = Number(row.tatHours || 0); row.amount = Number(row.amount || 0); row.repeat24h = Number(row.repeat24h || 0); row.repeat7d = Number(row.repeat7d || 0); row.reportedTs = Number(row.reportedTs || 0); out.push(row) } return out }
+
+                        // ---------- Filter ----------
+                        function applyFilters() { var s = FILTER.search.trim().toLowerCase(); FILTERED = TICKETS.filter(function (r) { if (FILTER.brands.size && !FILTER.brands.has(r.brand)) return false; if (FILTER.months.size && !FILTER.months.has(r.monthKey)) return false; if (FILTER.priorities.size && !FILTER.priorities.has(r.priority)) return false; if (FILTER.grades.size && !FILTER.grades.has(r.grade)) return false; if (FILTER.region && r.region !== FILTER.region) return false; if (s) { var hay = (r.store + ' ' + r.asset + ' ' + r.category + ' ' + r.issue + ' ' + r.ticketNo).toLowerCase(); if (!hay.includes(s)) return false } return true }) }
+
+                        // ---------- Filter UI ----------
+                        function initFilters() {
+                          ['f-brand', 'f-month', 'f-priority', 'f-grade'].forEach(function (id) { var el = document.getElementById(id); if (el) el.innerHTML = '' })
+                          var fr = document.getElementById('f-region'); if (fr) fr.innerHTML = '<option value="">All regions</option>'
+                          var brandVol = {}; TICKETS.forEach(function (r) { brandVol[r.brand] = (brandVol[r.brand] || 0) + 1 }); var brandsSorted = Object.entries(brandVol).filter(function (e) { return e[0] !== 'Unknown' }).sort(function (a, b) { return b[1] - a[1] }).map(function (e) { return e[0] })
+                          var fb = document.getElementById('f-brand'); brandsSorted.forEach(function (b) { brandColor(b); var el = document.createElement('span'); el.className = 'chip'; el.textContent = b; el.dataset.val = b; el.onclick = function () { if (FILTER.brands.has(b)) FILTER.brands.delete(b); else FILTER.brands.add(b); el.classList.toggle('active'); renderAll() }; fb.appendChild(el) })
+                          var months = [...new Set(TICKETS.map(function (r) { return r.monthKey }))].sort(); var fm = document.getElementById('f-month'); months.forEach(function (m) { var el = document.createElement('span'); el.className = 'chip'; el.textContent = TICKETS.find(function (r) { return r.monthKey === m }).monthLabel; el.dataset.val = m; el.onclick = function () { if (FILTER.months.has(m)) FILTER.months.delete(m); else FILTER.months.add(m); el.classList.toggle('active'); renderAll() }; fm.appendChild(el) })
+                          var fp = document.getElementById('f-priority');['A', 'B', 'C', 'D'].forEach(function (p) { var el = document.createElement('span'); el.className = 'chip'; el.textContent = p; el.dataset.val = p; el.style.setProperty('--chip-color', priColors[p]); el.onclick = function () { if (FILTER.priorities.has(p)) FILTER.priorities.delete(p); else FILTER.priorities.add(p); el.classList.toggle('active'); renderAll() }; fp.appendChild(el) })
+                          var fg = document.getElementById('f-grade');['A', 'B', 'C', 'D', '?'].forEach(function (g) { var el = document.createElement('span'); el.className = 'chip'; el.textContent = g === '?' ? 'Unknown' : g; el.dataset.val = g; el.onclick = function () { if (FILTER.grades.has(g)) FILTER.grades.delete(g); else FILTER.grades.add(g); el.classList.toggle('active'); renderAll() }; fg.appendChild(el) })
+                          var regionCount = {}; TICKETS.forEach(function (r) { regionCount[r.region] = (regionCount[r.region] || 0) + 1 }); var topRegions = Object.entries(regionCount).sort(function (a, b) { return b[1] - a[1] }).slice(0, 30); topRegions.forEach(function (e) { var opt = document.createElement('option'); opt.value = e[0]; opt.textContent = e[0] + ' (' + fmtN(e[1]) + ')'; fr.appendChild(opt) }); fr.onchange = function () { FILTER.region = this.value; renderAll() }
+                          var st; document.getElementById('f-search').oninput = function () { clearTimeout(st); var v = this.value; st = setTimeout(function () { FILTER.search = v; renderAll() }, 250) }
+                          document.getElementById('f-reset').onclick = function () { FILTER.brands.clear(); FILTER.months.clear(); FILTER.priorities.clear(); FILTER.grades.clear(); FILTER.region = ''; FILTER.search = ''; document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active') }); document.getElementById('f-region').value = ''; document.getElementById('f-search').value = ''; renderAll() }
+                        }
+
+                        function renderSummary() { var parts = []; if (FILTER.brands.size) parts.push(FILTER.brands.size + ' brand' + (FILTER.brands.size > 1 ? 's' : '')); if (FILTER.months.size) parts.push(FILTER.months.size + ' month' + (FILTER.months.size > 1 ? 's' : '')); if (FILTER.priorities.size) parts.push('pri ' + [...FILTER.priorities].join(',')); if (FILTER.grades.size) parts.push('grade ' + [...FILTER.grades].join(',')); if (FILTER.region) parts.push(FILTER.region); if (FILTER.search) parts.push('"' + FILTER.search + '"'); var s = parts.length ? 'Filtered: ' + parts.join(' · ') + ' → ' + fmtN(FILTERED.length) + ' tickets' : 'All ' + fmtN(FILTERED.length) + ' tickets'; document.getElementById('filter-summary').textContent = s }
+
+                        var TAB_DEFS = [{ id: 'overview', label: 'Overview' }, { id: 'tat', label: 'TAT & SLA' }, { id: 'assets', label: 'Assets & Failures' }, { id: 'spend', label: 'Cost & Spend' }, { id: 'teams', label: 'Teams & Managers' }, { id: 'grade', label: 'Grade & Priority' }, { id: 'anomalies', label: 'Patterns & Anomalies' }, { id: 'ai', label: 'AI & Predictive Insights' }];
+                        function initTabs() { var container = document.getElementById('tabs'); container.innerHTML = TAB_DEFS.map(function (t) { return '<button class="tab' + (t.id === 'overview' ? ' active' : '') + '" data-tab="' + t.id + '">' + esc(t.label) + '</button>' }).join(''); Array.from(container.children).forEach(function (t) { t.onclick = function () { document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active') }); document.querySelectorAll('.tab-panel').forEach(function (x) { x.classList.remove('active') }); t.classList.add('active'); document.getElementById('tab-' + t.dataset.tab).classList.add('active'); renderAll() } }) }
+
+                        function initToggles() { document.querySelectorAll('.toggle').forEach(function (t) { t.onclick = function () { toggleChartTable(t.dataset.toggle) } }) }
+                        function injectAskAiBadges() { document.querySelectorAll('.panel').forEach(function (el) { if (el.querySelector('.ask-ai-badge')) return; var badge = document.createElement('span'); badge.className = 'ask-ai-badge'; badge.textContent = '\u2728 Ask AI'; badge.dataset.context = el.querySelector('.st')?.textContent || el.querySelector('h3')?.textContent || 'this chart'; badge.onclick = function (e) { e.stopPropagation(); var ctx = this.dataset.context; var tab = document.querySelector('.tab.active'); var tabName = tab ? tab.textContent.trim() : 'overview'; var msg = 'Tell me about "' + ctx + '" in the ' + tabName + ' tab.'; var inp = document.getElementById('chat-input'); inp.value = msg; inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 120) + 'px'; inp.scrollTop = 0; document.getElementById('chat-panel').classList.add('active'); document.getElementById('chat-btn').classList.add('active'); inp.focus() }; el.style.position = 'relative'; el.appendChild(badge) }) }
+
+                        function renderKPIs() { var idx = FILTERED; var tat = [], spend = 0, withCost = 0; idx.forEach(function (r) { var t = r.tatHours; if (t >= 0) tat.push(t); var a = r.amount; if (a > 0) { spend += a; withCost++ } }); var med = median(tat), mn = mean(tat), p90 = quantile(tat, .9), breaches = 0, priCounts = { A: 0, B: 0, C: 0, D: 0 }; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; var p = r.priority; if (priCounts[p] !== undefined) priCounts[p]++; if (t > SLA_TARGETS[p]) breaches++ }); var bPct = pct(breaches, tat.length), sameDay = pct(tat.filter(function (t) { return t <= 24 }).length, tat.length), u72 = pct(tat.filter(function (t) { return t <= 72 }).length, tat.length); var stores = new Set(); idx.forEach(function (r) { stores.add(r.store) }); var totalBrands = new Set(TICKETS.map(function (r) { return r.brand })).size; var kpis = [{ cls: 'accent', label: 'Tickets', value: fmtN(idx.length), sub: fmtN(totalBrands) + ' brands' }, { cls: '', label: 'Stores in view', value: fmtN(stores.size), sub: 'of ' + fmtN(new Set(TICKETS.map(function (r) { return r.store })).size) + ' total' }, { cls: '', label: 'Median TAT', value: med.toFixed(1) + 'h', sub: 'Mean: ' + mn.toFixed(1) + 'h · p90: ' + p90.toFixed(0) + 'h' }, { cls: bPct > 50 ? 'bad' : bPct > 30 ? 'warn' : 'good', label: 'SLA Breach', value: bPct.toFixed(1) + '%', sub: fmtN(breaches) + ' of ' + fmtN(tat.length) }, { cls: 'good', label: 'Same-day Close', value: sameDay.toFixed(1) + '%', sub: 'Within 3d: ' + u72.toFixed(1) + '%' }, { cls: 'warn', label: 'Spend', value: fmtINR(spend), sub: fmtN(withCost) + ' priced tickets' }]; document.getElementById('kpi-grid').innerHTML = kpis.map(function (k) { return '<div class="kpi ' + k.cls + '"><div class="label">' + k.label + '</div><div class="value">' + k.value + '</div><div class="sub">' + k.sub + '</div></div>' }).join('') }
+
+                        function emptyTab(id) { var t = document.getElementById(id), o = t.querySelector('.empty-overlay'); o ? o.style.display = '' : t.insertAdjacentHTML('afterbegin', '<div class="empty-overlay"><p>No tickets match current filters.</p></div>') }
+                        function fillTab(id) { var o = document.getElementById(id).querySelector('.empty-overlay'); if (o) o.style.display = 'none' }
+                        function renderOverview() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-overview'); return } else fillTab('tab-overview')
+                          var months = [...new Set(idx.map(function (r) { return r.monthKey }))].sort(); var bv = {}; idx.forEach(function (r) { bv[r.brand] = (bv[r.brand] || 0) + 1 }); var topBrands = Object.entries(bv).filter(function (e) { return e[0] !== 'Unknown' }).sort(function (a, b) { return b[1] - a[1] }).slice(0, 6).map(function (e) { return e[0] }); var grid = {}; topBrands.forEach(function (b) { grid[b] = {}; months.forEach(function (m) { grid[b][m] = 0 }) }); idx.forEach(function (r) { if (grid[r.brand] && grid[r.brand][r.monthKey] !== undefined) grid[r.brand][r.monthKey]++ })
+                          var ds = topBrands.map(function (b, i) { return { label: b, data: months.map(function (m) { return grid[b][m] }), backgroundColor: palette[i], stack: 's' } }); mkChart('ch-monthly-brand', { type: 'bar', data: { labels: months.map(function (m) { var r = idx.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m }), datasets: ds }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, grid: { color: '#243042' } } } } })
+                          var tblRows = months.map(function (m) { var row = [], tot = 0; topBrands.forEach(function (b) { var v = grid[b][m]; row.push(fmtN(v)); tot += v }); return [m].concat(row).concat([fmtN(tot)]) }); fillSimpleTable('ch-monthly-brand_table', ['Month'].concat(topBrands).concat(['Total']), tblRows)
+
+                          var entries = Object.entries(bv).filter(function (e) { return e[0] !== 'Unknown' && e[0] !== 'nan' }).sort(function (a, b) { return b[1] - a[1] }); mkChart('ch-brand-pie', { type: 'doughnut', data: { labels: entries.map(function (e) { return e[0] }), datasets: [{ data: entries.map(function (e) { return e[1] }), backgroundColor: palette, borderWidth: 1, borderColor: '#1a2030' }] }, options: { maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } }, onClick: function (e, el) { if (!el.length) return; var b = entries[el[0].index][0]; if (FILTER.brands.has(b)) FILTER.brands.delete(b); else FILTER.brands.add(b); document.querySelectorAll('#f-brand .chip').forEach(function (c) { if (c.dataset.val === b) c.classList.toggle('active') }); renderAll() } } }); fillSimpleTable('ch-brand-pie_table', ['Brand', 'Tickets', '%'], entries.map(function (e) { return [e[0], fmtN(e[1]), pct(e[1], idx.length).toFixed(1) + '%'] }))
+
+                          var priCounts = { A: 0, B: 0, C: 0, D: 0 }; idx.forEach(function (r) { if (priCounts[r.priority] !== undefined) priCounts[r.priority]++ }); var priOrder = ['A', 'B', 'C', 'D'], priData = priOrder.map(function (p) { return priCounts[p] || 0 }), priColors = ['#cc7066', '#d6a85a', '#638ecc', '#6fc0a0']; mkChart('ch-priority', { type: 'bar', data: { labels: priOrder.map(function (p) { return 'Priority ' + p }), datasets: [{ data: priData, backgroundColor: priColors }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } }, onClick: function (e, el) { if (!el.length) return; var p = priOrder[el[0].index]; if (FILTER.priorities.has(p)) FILTER.priorities.delete(p); else FILTER.priorities.add(p); document.querySelectorAll('#f-priority .chip').forEach(function (c) { if (c.dataset.val === p) c.classList.toggle('active') }); renderAll() } } }); fillSimpleTable('ch-priority_table', ['Priority', 'Tickets', '%'], priOrder.map(function (p, i) { return [p, fmtN(priData[i]), pct(priData[i], idx.length).toFixed(1) + '%'] }))
+
+                          var rc = {}; idx.forEach(function (r) { rc[r.region] = (rc[r.region] || 0) + 1 }); var rt = Object.entries(rc).filter(function (e) { return e[0] !== '—' }).sort(function (a, b) { return b[1] - a[1] }).slice(0, 12); mkChart('ch-regions', { type: 'bar', data: { labels: rt.map(function (e) { return e[0] }), datasets: [{ data: rt.map(function (e) { return e[1] }), backgroundColor: '#638ecc' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#243042' } }, y: { grid: { display: false } } }, onClick: function (e, el) { if (!el.length) return; var r = rt[el[0].index][0]; FILTER.region = FILTER.region === r ? '' : r; document.getElementById('f-region').value = FILTER.region; renderAll() } } }); fillSimpleTable('ch-regions_table', ['Region', 'Tickets', '%'], rt.map(function (e) { return [e[0], fmtN(e[1]), pct(e[1], idx.length).toFixed(1) + '%'] }))
+
+                          renderHeatmap(idx); renderTopStoresCats(idx); renderWeeklyTrend(idx)
+
+                          /* story cards */
+                          var tats = []; idx.forEach(function (r) { var t = r.tatHours; if (t >= 0) tats.push(t) }); var spendTot = 0, withCost = 0; idx.forEach(function (r) { if (r.amount > 0) { spendTot += r.amount; withCost++ } }); var critShare = 0; idx.forEach(function (r) { if (r.priority === 'A') critShare++ })
+                          document.getElementById('ov-flow').textContent = fmtN(idx.length) + ' tickets'
+                          document.getElementById('ov-flow-sc').textContent = fmtN(months.length) + ' months · ' + fmtN(Object.keys(bv).length) + ' brands · ' + fmtN(idx.length ? new Set(idx.map(function (r) { return r.store })).size : 0) + ' stores'
+                          document.getElementById('ov-cost').textContent = fmtINR(spendTot)
+                          document.getElementById('ov-cost-sc').textContent = fmtN(withCost) + ' priced tickets avg ' + fmtINR(withCost ? Math.round(spendTot / withCost) : 0) + '/ticket · ' + (idx.length ? fmtPct(withCost / idx.length) : '0%') + ' priced'
+                          document.getElementById('ov-urgency').textContent = fmtPct(critShare / idx.length) + ' critical'
+                          document.getElementById('ov-urgency-sc').textContent = 'Priority A (4h SLA) · median TAT ' + (tats.length ? median(tats).toFixed(1) : '—') + 'h · SLA breach rate ' + (tats.length ? pct(tats.filter(function (t) { return t > 4 }).length, tats.length).toFixed(1) : '—') + '% among A'
+                        }
+
+                        function renderHeatmap(idx) { var grid = Array.from({ length: 7 }, function () { return new Array(24).fill(0) }); idx.forEach(function (r) { var ts = r.reportedTs; if (!ts) return; var d = new Date(ts * 1000); grid[d.getDay()][d.getHours()]++ }); var max = Math.max.apply(null, grid.flat().concat([1])), days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; var html = '<div class="hm-corner"></div>'; for (var h = 0; h < 24; h++)html += '<div class="hm-h">' + h + '</div>'; for (var d = 0; d < 7; d++) { html += '<div class="hm-d">' + days[d] + '</div>'; for (var h = 0; h < 24; h++) { var v = grid[d][h], t = v / max, r = Math.round(34 + t * 55), g = Math.round(42 + t * 98), b = Math.round(61 + t * 194), txt = v > max * 0.5 ? '#fff' : 'transparent'; html += '<div class="hm-cell" title="' + days[d] + ' ' + h + ':00 — ' + fmtN(v) + ' tickets" style="background:rgb(' + r + ',' + g + ',' + b + ');color:' + txt + '">' + (v > max * 0.5 ? v : '') + '</div>' } } document.getElementById('heatmap').innerHTML = html }
+
+                        function renderTopStoresCats(idx) { var sc = {}, cc = {}; idx.forEach(function (r) { sc[r.store] = (sc[r.store] || 0) + 1; cc[r.category] = (cc[r.category] || 0) + 1 }); var stores = Object.entries(sc).sort(function (a, b) { return b[1] - a[1] }).slice(0, 15), cats = Object.entries(cc).sort(function (a, b) { return b[1] - a[1] }).slice(0, 15); fillSimpleTable('tbl-top-stores', ['Store', 'Tickets', '%'], stores.map(function (e) { return [e[0], fmtN(e[1]), pct(e[1], idx.length).toFixed(1) + '%'] })); fillSimpleTable('tbl-top-cats', ['Category', 'Tickets', '%'], cats.map(function (e) { return [e[0], fmtN(e[1]), pct(e[1], idx.length).toFixed(1) + '%'] })) }
+                        function renderWeeklyTrend(idx) { var wk = {}; idx.forEach(function (r) { var ts = r.reportedTs; if (!ts) return; var d = new Date(ts * 1000), wkKey = d.getFullYear() + '-W' + String(Math.ceil((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 604800000)).padStart(2, '0'); wk[wkKey] = (wk[wkKey] || 0) + 1 }); var wKeys = Object.keys(wk).sort(), wData = wKeys.map(function (k) { return wk[k] }), wLabels = wKeys.map(function (k) { var parts = k.split('-W'); return 'W' + parts[1] }); mkChart('ch-weekly-trend', { type: 'line', data: { labels: wLabels, datasets: [{ data: wData, borderColor: '#638ecc', backgroundColor: 'rgba(99,142,204,0.08)', fill: true, tension: .3, borderWidth: 2, pointRadius: 2, pointHoverRadius: 5 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' }, ticks: { font: { size: 9 } } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } } } }) }
+
+                        // ================================================================
+                        // TAT & SLA
+                        // ================================================================
+                        function renderTAT() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-tat'); return } else fillTab('tab-tat')
+                          var tats = []; idx.forEach(function (r) { var t = r.tatHours; if (t >= 0) tats.push(t) })
+                          var buckets = ['0-4h', '4-24h', '1-3 days', '3-7 days', '1-2 weeks', '>2 weeks'], bc = [0, 0, 0, 0, 0, 0]; tats.forEach(function (t) { if (t <= 4) bc[0]++; else if (t <= 24) bc[1]++; else if (t <= 72) bc[2]++; else if (t <= 168) bc[3]++; else if (t <= 336) bc[4]++; else bc[5]++ })
+                          mkChart('ch-tat-buckets', { type: 'bar', data: { labels: buckets, datasets: [{ data: bc, backgroundColor: ['#6fc0a0', '#638ecc', '#7facd6', '#d6a85a', '#d4828a', '#cc7066'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } }); fillSimpleTable('ch-tat-buckets_table', ['Bucket', 'Tickets', '%'], buckets.map(function (b, i) { return [b, fmtN(bc[i]), pct(bc[i], tats.length).toFixed(1) + '%'] }))
+
+                          var bTat = {}; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; var b = r.brand; if (b === 'Unknown') return; (bTat[b] = bTat[b] || []).push(t) }); var bSum = Object.entries(bTat).filter(function (e) { return e[1].length >= 30 }).map(function (e) { return { b: e[0], med: median(e[1]), mn: mean(e[1]), n: e[1].length } }).sort(function (a, b) { return a.med - b.med }); mkChart('ch-tat-brand', { type: 'bar', data: { labels: bSum.map(function (x) { return x.b }), datasets: [{ label: 'Median (h)', data: bSum.map(function (x) { return +x.med.toFixed(1) }), backgroundColor: '#638ecc' }, { label: 'Mean (h)', data: bSum.map(function (x) { return +x.mn.toFixed(1) }), backgroundColor: '#d6a85a' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { grid: { color: '#243042' } }, y: { grid: { display: false } } } } }); fillSimpleTable('ch-tat-brand_table', ['Brand', 'Median (h)', 'Mean (h)', 'Tickets'], bSum.map(function (x) { return [x.b, x.med.toFixed(1), x.mn.toFixed(1), fmtN(x.n)] }))
+
+                          var sla = { A: { t: 0, b: 0 }, B: { t: 0, b: 0 }, C: { t: 0, b: 0 }, D: { t: 0, b: 0 } }; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; var p = r.priority; if (!sla[p]) return; sla[p].t++; if (t > SLA_TARGETS[p]) sla[p].b++ }); var slaHtml = '<thead><tr><th>Priority</th><th class="num">Resolve Target</th><th class="num">Tickets</th><th class="num">Breaches</th><th class="num">Breach %</th></tr></thead><tbody>';['A', 'B', 'C', 'D'].forEach(function (p) { var s = sla[p], pc = pct(s.b, s.t), cls = pc > 50 ? 'bad' : pc > 30 ? 'warn' : 'good'; slaHtml += '<tr><td>' + p + '</td><td class="num">' + SLA_LABEL[p] + '</td><td class="num">' + fmtN(s.t) + '</td><td class="num">' + fmtN(s.b) + '</td><td class="num"><span class="tag ' + cls + '">' + pc.toFixed(1) + '%</span></td></tr>' })
+                          document.getElementById('tbl-sla').innerHTML = slaHtml + '</tbody>'
+                          var slaTotal = 0, slaBreach = 0; Object.keys(sla).forEach(function (p) { slaTotal += sla[p].t; slaBreach += sla[p].b }); var slaOk = slaTotal - slaBreach; mkChart('ch-sla-compliance', { type: 'doughnut', data: { labels: ['On time', 'Breached'], datasets: [{ data: [slaOk, slaBreach], backgroundColor: ['#6fc0a0', '#cc7066'], borderWidth: 1, borderColor: '#141922' }] }, options: { maintainAspectRatio: false, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } } } })
+
+                          var pTat = { A: [], B: [], C: [], D: [] }; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; var p = r.priority; if (pTat[p]) pTat[p].push(t) }); var pMeds = ['A', 'B', 'C', 'D'].map(function (p) { return +median(pTat[p]).toFixed(1) }), pMns = ['A', 'B', 'C', 'D'].map(function (p) { return +mean(pTat[p]).toFixed(1) }); mkChart('ch-tat-pri', { type: 'bar', data: { labels: ['A', 'B', 'C', 'D'].map(function (p) { return 'Priority ' + p }), datasets: [{ label: 'Median (h)', data: pMeds, backgroundColor: '#638ecc' }, { label: 'Mean (h)', data: pMns, backgroundColor: '#d6a85a' }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } }); fillSimpleTable('ch-tat-pri_table', ['Priority', 'Median (h)', 'Mean (h)', 'Tickets'], ['A', 'B', 'C', 'D'].map(function (p, i) { return [p, pMeds[i], pMns[i], fmtN(pTat[p].length)] }))
+
+                          var mTat = {}; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; (mTat[r.monthKey] = mTat[r.monthKey] || []).push(t) }); var mKeys = Object.keys(mTat).sort(), mMed = mKeys.map(function (m) { return +median(mTat[m]).toFixed(1) }), mMn = mKeys.map(function (m) { return +mean(mTat[m]).toFixed(1) }), mLabels = mKeys.map(function (m) { var r = idx.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m }); mkChart('ch-tat-monthly', { type: 'bar', data: { labels: mLabels, datasets: [{ label: 'Median TAT (h)', data: mMed, backgroundColor: '#638ecc', order: 2 }, { label: 'Mean TAT (h)', data: mMn, type: 'line', borderColor: '#d6a85a', backgroundColor: 'transparent', tension: .3, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#d6a85a', order: 1 }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } }); fillSimpleTable('ch-tat-monthly_table', ['Month', 'Median (h)', 'Mean (h)', 'Tickets'], mKeys.map(function (m, i) { return [mLabels[i], mMed[i], mMn[i], fmtN(mTat[m].length)] }))
+
+                          var cTat = {}; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; (cTat[r.category] = cTat[r.category] || []).push(t) }); var cSum = Object.entries(cTat).filter(function (e) { return e[1].length >= 50 }).map(function (e) { return { c: e[0], med: median(e[1]), n: e[1].length } }); var slow = cSum.slice().sort(function (a, b) { return b.med - a.med }).slice(0, 12), fast = cSum.slice().sort(function (a, b) { return a.med - b.med }).slice(0, 12); fillSimpleTable('tbl-slow-cats', ['Category', 'Median TAT (h)', 'Tickets'], slow.map(function (x) { return [x.c, x.med.toFixed(1), fmtN(x.n)] })); fillSimpleTable('tbl-fast-cats', ['Category', 'Median TAT (h)', 'Tickets'], fast.map(function (x) { return [x.c, x.med.toFixed(1), fmtN(x.n)] }))
+                        }
+
+                        // ================================================================
+                        // ASSETS & FAILURES
+                        // ================================================================
+                        function renderAssets() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-assets'); return } else fillTab('tab-assets')
+                          var types = {}; idx.forEach(function (r) { types[r.issue] = (types[r.issue] || 0) + 1 }); var tTop = Object.entries(types).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-types', ['Ticket Type', 'Tickets', '%'], tTop.map(function (e) { return [e[0], fmtN(e[1]), pct(e[1], idx.length).toFixed(1) + '%'] }))
+                          var fp = {}; idx.forEach(function (r) { var k = r.asset + ' | ' + r.category; fp[k] = (fp[k] || 0) + 1 }); var fpTop = Object.entries(fp).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-failure-points', ['Asset · Category', 'Tickets'], fpTop.map(function (e) { return [e[0], fmtN(e[1])] }))
+                          var av = {}; idx.forEach(function (r) { av[r.asset] = (av[r.asset] || 0) + 1 }); var top8 = Object.entries(av).sort(function (a, b) { return b[1] - a[1] }).slice(0, 8).map(function (e) { return e[0] }), months = [...new Set(idx.map(function (r) { return r.monthKey }))].sort(), trend = {}; top8.forEach(function (a) { trend[a] = {}; months.forEach(function (m) { trend[a][m] = 0 }) }); idx.forEach(function (r) { if (trend[r.asset]) trend[r.asset][r.monthKey]++ }); var tds = top8.map(function (a, i) { return { label: a, data: months.map(function (m) { return trend[a][m] }), borderColor: palette[i], backgroundColor: palette[i] + '33', tension: .3, borderWidth: 2 } })
+                          mkChart('ch-asset-trend', { type: 'line', data: { labels: months.map(function (m) { var r = idx.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m }), datasets: tds }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } }); fillSimpleTable('ch-asset-trend_table', ['Month'].concat(top8), months.map(function (m) { return [m].concat(top8.map(function (a) { return fmtN(trend[a][m]) })) }))
+                          var chronic = Object.entries(av).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-chronic', ['Store', 'Tickets', 'Avg/month'], chronic.map(function (e) { return [e[0], fmtN(e[1]), (e[1] / Math.max(1, months.length)).toFixed(1)] }))
+                          renderRecurring(idx); renderAssetDir(idx, months)
+                        }
+
+                        function renderRecurring(idx) { var groups = {}; idx.forEach(function (r) { var k = r.store + '|' + r.asset; (groups[k] = groups[k] || []).push(r.reportedTs) }); var DAY = 86400, recurs = []; Object.entries(groups).forEach(function (e) { var times = e[1]; times.sort(function (a, b) { return a - b }); var pairs = 0, gaps = []; for (var i = 1; i < times.length; i++) { var gap = (times[i] - times[i - 1]) / DAY; if (gap <= 14) { pairs++; gaps.push(gap) } } if (pairs >= 2) recurs.push([e[0].split('|')[0], e[0].split('|')[1], pairs + 1, times.length, (gaps.reduce(function (a, b) { return a + b }, 0) / gaps.length).toFixed(1)]) }); recurs.sort(function (a, b) { return b[2] - a[2] }); mkGrid('grid-recurring', ['Store', 'Asset', 'Recurrences', 'Total tickets', 'Avg gap (days)'], recurs.slice(0, 100)) }
+
+                        function renderAssetDir(idx, months) {
+                          var stats = {}; idx.forEach(function (r) { var a = r.asset; if (!stats[a]) stats[a] = { n: 0, tats: [], spend: 0 }; stats[a].n++; var t = r.tatHours; if (t >= 0) stats[a].tats.push(t); if (r.amount > 0) stats[a].spend += r.amount }); var rows = Object.entries(stats).sort(function (a, b) { return b[1].n - a[1].n }).slice(0, 200).map(function (e) { return [e[0], e[1].n, +median(e[1].tats).toFixed(1), fmtINR(e[1].spend)] })
+                          if (grids['grid-asset-dir']) grids['grid-asset-dir'].destroy(); document.getElementById('grid-asset-dir').innerHTML = ''
+                          grids['grid-asset-dir'] = new gridjs.Grid({ columns: [{ name: 'Asset', formatter: function (c) { return gridjs.html('<span class="muted-link" data-asset="' + esc(c) + '">' + esc(c) + '</span>') } }, 'Tickets', 'Median TAT (h)', 'Spend'], data: rows, sort: true, search: true, pagination: { limit: 15 } }).render(document.getElementById('grid-asset-dir'))
+                          setTimeout(function () { document.querySelectorAll('#grid-asset-dir [data-asset]').forEach(function (el) { el.onclick = function () { openAssetModal(el.dataset.asset) } }) }, 100)
+                        }
+
+                        // ================================================================
+                        // SPEND
+                        // ================================================================
+                        function renderSpend() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-spend'); return } else fillTab('tab-spend')
+                          var ms = {}, mc = {}; idx.forEach(function (r) { var m = r.monthKey; ms[m] = (ms[m] || 0) + (r.amount || 0); mc[m] = (mc[m] || 0) + (r.amount > 0 ? 1 : 0) }); var mKeys = Object.keys(ms).sort(), mLabels = mKeys.map(function (m) { var r = idx.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m })
+                          var mlMap = {}; mKeys.forEach(function (m, i) { mlMap[m] = mLabels[i] }); mkChart('ch-monthly-spend', { type: 'bar', data: { labels: mKeys, datasets: [{ data: mKeys.map(function (m) { return ms[m] }), backgroundColor: '#638ecc' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return fmtINRfull(c.parsed.y) + ' · ' + fmtN(mc[mKeys[c.dataIndex]] || 0) + ' priced tickets' } } } }, scales: { y: { grid: { color: '#243042' }, ticks: { callback: function (v) { return fmtINR(v) } } }, x: { ticks: { callback: function (v, i) { return mlMap[mKeys[i]] || mKeys[i] } }, grid: { display: false } } } } }); fillSimpleTable('ch-monthly-spend_table', ['Month', 'Spend', 'Priced tickets'], mKeys.map(function (m, i) { return [mLabels[i], fmtINR(ms[m]), fmtN(mc[m])] }))
+
+                          var bs = {}; idx.forEach(function (r) { bs[r.brand] = (bs[r.brand] || 0) + (r.amount || 0) }); var bsE = Object.entries(bs).filter(function (e) { return e[0] !== 'Unknown' }).sort(function (a, b) { return b[1] - a[1] }), totSp = bsE.reduce(function (s, e) { return s + e[1] }, 0); mkChart('ch-spend-brand', { type: 'doughnut', data: { labels: bsE.map(function (e) { return e[0] }), datasets: [{ data: bsE.map(function (e) { return e[1] }), backgroundColor: palette, borderWidth: 1, borderColor: '#1a2030' }] }, options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: function (c) { return c.label + ': ' + fmtINRfull(c.parsed) } } } } } }); fillSimpleTable('ch-spend-brand_table', ['Brand', 'Spend', '%'], bsE.map(function (e) { return [e[0], fmtINR(e[1]), pct(e[1], totSp).toFixed(1) + '%'] }))
+
+                          /* Brand×Category spend breakdown (replaces treemap) */
+                          var bcData = {}; idx.forEach(function (r) { if (r.amount <= 0 || r.brand === 'Unknown') return; var k = r.brand + '|' + r.category; bcData[k] = (bcData[k] || 0) + r.amount }); var bcEntries = Object.entries(bcData).sort(function (a, b) { return b[1] - a[1] }).slice(0, 25); fillSimpleTable('tbl-spend-bc', ['Brand', 'Category', 'Spend'], bcEntries.map(function (e) { var p = e[0].split('|'); return [p[0], p[1], fmtINR(e[1])] }))
+
+                          var cs = {}, cc = {}; idx.forEach(function (r) { if (r.amount <= 0) return; cs[r.category] = (cs[r.category] || 0) + r.amount; cc[r.category] = (cc[r.category] || 0) + 1 }); var csT = Object.entries(cs).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-spend-cats', ['Category', 'Spend', 'Tickets', 'Avg/ticket'], csT.map(function (e) { return [e[0], fmtINR(e[1]), fmtN(cc[e[0]]), fmtINR(cc[e[0]] ? Math.round(e[1] / cc[e[0]]) : 0)] }))
+                          var as = {}, ac = {}; idx.forEach(function (r) { if (r.amount <= 0) return; as[r.asset] = (as[r.asset] || 0) + r.amount; ac[r.asset] = (ac[r.asset] || 0) + 1 }); var asT = Object.entries(as).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-spend-assets', ['Asset', 'Spend', 'Tickets', 'Avg/ticket'], asT.map(function (e) { return [e[0], fmtINR(e[1]), fmtN(ac[e[0]]), fmtINR(ac[e[0]] ? Math.round(e[1] / ac[e[0]]) : 0)] }))
+                          var ss = {}; idx.forEach(function (r) { if (r.amount <= 0) return; ss[r.store] = (ss[r.store] || 0) + r.amount }); var ssT = Object.entries(ss).sort(function (a, b) { return b[1] - a[1] }).slice(0, 20); fillSimpleTable('tbl-spend-stores', ['Store', 'Spend'], ssT.map(function (e) { return [e[0], fmtINR(e[1])] }))
+                          var big = idx.filter(function (r) { return r.amount > 0 }).map(function (r) { return [r.ticketNo, r.brand, r.asset, r.store, Math.round(r.amount)] }).sort(function (a, b) { return b[4] - a[4] }).slice(0, 20); fillSimpleTable('tbl-big-tickets', ['Ticket', 'Brand', 'Asset', 'Store', 'Amount'], big.map(function (e) { return [e[0], e[1], e[2], e[3], fmtINR(e[4])] }))
+                          var storeStats = {}; idx.forEach(function (r) { if (r.amount <= 0) return; var s = r.store; if (!storeStats[s]) storeStats[s] = { tickets: 0, spend: 0 }; storeStats[s].tickets++; storeStats[s].spend += r.amount }); var scatterData = Object.entries(storeStats).filter(function (e) { return e[1].tickets >= 5 }).map(function (e) { return { x: e[1].tickets, y: e[1].spend, store: e[0] } }); var maxT = Math.max.apply(null, scatterData.map(function (d) { return d.x })), maxS = Math.max.apply(null, scatterData.map(function (d) { return d.y })); mkChart('ch-spend-scatter', { type: 'scatter', data: { datasets: [{ data: scatterData.map(function (d) { return { x: d.x, y: d.y, store: d.store } }), backgroundColor: 'rgba(99,142,204,0.6)', pointRadius: 4, pointHoverRadius: 7 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { var s = c.raw.store || ''; return s + ' — ' + fmtN(c.parsed.x) + ' tickets · ' + fmtINRfull(c.parsed.y) } } } }, scales: { x: { grid: { color: '#243042' }, title: { display: true, text: 'Tickets', color: '#9aa3b2', font: { size: 10 } } }, y: { grid: { color: '#243042' }, title: { display: true, text: 'Spend', color: '#9aa3b2', font: { size: 10 } }, ticks: { callback: function (v) { return fmtINR(v) } } } } } })
+                        }
+
+                        // ================================================================
+                        // TEAMS
+                        // ================================================================
+                        function renderTeams() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-teams'); return } else fillTab('tab-teams')
+                          function scorecard(keyFn) { var m = {}; idx.forEach(function (r) { var k = keyFn(r); if (!k || k === 'Unknown' || k === '') return; if (!m[k]) m[k] = { n: 0, tats: [], breaches: 0, sla: 0, spend: 0 }; m[k].n++; var t = r.tatHours; if (t >= 0) { m[k].tats.push(t); var p = r.priority; if (SLA_TARGETS[p]) { m[k].sla++; if (t > SLA_TARGETS[p]) m[k].breaches++ } } if (r.amount > 0) m[k].spend += r.amount }); return Object.entries(m).filter(function (e) { return e[1].n >= 50 }) }
+                          var teams = scorecard(function (r) { return r.team }); mkGrid('grid-team', ['Team', 'Tickets', 'Median TAT', 'Mean TAT', 'SLA Breach %', 'Spend'], teams.map(function (e) { return [e[0], e[1].n, median(e[1].tats).toFixed(1), mean(e[1].tats).toFixed(1), e[1].sla ? (e[1].breaches / e[1].sla * 100).toFixed(1) : 0, fmtINR(e[1].spend)] }))
+                          var teamSorted = teams.slice().sort(function (a, b) { return median(a[1].tats) - median(b[1].tats) }); var teamLabels = teamSorted.map(function (e) { return e[0] }), teamMeds = teamSorted.map(function (e) { return +median(e[1].tats).toFixed(1) }); mkChart('ch-team-tat', { type: 'bar', data: { labels: teamLabels, datasets: [{ data: teamMeds, backgroundColor: '#638ecc' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#243042' }, title: { display: true, text: 'Median TAT (h)', color: '#9aa3b2', font: { size: 10 } } }, y: { grid: { display: false } } } } })
+                          var mgrs = scorecard(function (r) { return r.manager }); mkGrid('grid-manager', ['Manager', 'Tickets', 'Median TAT', 'Mean TAT', 'SLA Breach %', 'Spend'], mgrs.map(function (e) { return [e[0], e[1].n, median(e[1].tats).toFixed(1), mean(e[1].tats).toFixed(1), e[1].sla ? (e[1].breaches / e[1].sla * 100).toFixed(1) : 0, fmtINR(e[1].spend)] }))
+                          var asg = scorecard(function (r) { return r.assignee }); mkGrid('grid-assignee', ['Assignee', 'Tickets', 'Median TAT', 'Mean TAT', 'SLA Breach %'], asg.map(function (e) { return [e[0], e[1].n, median(e[1].tats).toFixed(1), mean(e[1].tats).toFixed(1), e[1].sla ? (e[1].breaches / e[1].sla * 100).toFixed(1) : 0] }))
+                          renderVendors(idx)
+                        }
+
+                        function renderVendors(idx) {
+                          var vc = RAW && RAW.vendorScorecard || []; if (!vc.length) { document.getElementById('grid-vendor').innerHTML = '<p class="note">No vendor data available.</p>'; return }
+                          var filtered = vc.filter(function (v) { return FILTER.brands.size ? FILTER.brands.has(v.brand) : true }); mkGrid('grid-vendor', [{ name: 'Assignee', formatter: function (c) { return gridjs.html(esc(c)) } }, 'Team', 'Brand', 'Tickets', 'Score', 'Avg TAT', 'Spend', 'On-time %'], filtered.slice(0, 50).map(function (v) { return [v.assignee, v.team, v.brand, v.tickets, v.score.toFixed(1), v.avgTatHours.toFixed(1) + 'h', fmtINR(v.spend), (v.onTimeRate * 100).toFixed(1) + '%'] }), { pagination: { limit: 15 } })
+                        }
+
+                        // ================================================================
+                        // GRADE & PRIORITY
+                        // ================================================================
+                        function renderGrade() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-grade'); return } else fillTab('tab-grade')
+                          var priCounts = { A: 0, B: 0, C: 0, D: 0 }, grdCounts = { A: 0, B: 0, C: 0, D: 0, '?': 0 }, matrix = {};['A', 'B', 'C', 'D'].forEach(function (p) { matrix[p] = { A: 0, B: 0, C: 0, D: 0, '?': 0 } }); idx.forEach(function (r) { var p = r.priority, g = r.grade || '?'; if (priCounts[p] !== undefined) priCounts[p]++; if (grdCounts[g] !== undefined) grdCounts[g]++; if (matrix[p] && matrix[p][g] !== undefined) matrix[p][g]++ })
+                          mkChart('ch-vol-priority', { type: 'bar', data: { labels: ['Priority A', 'Priority B', 'Priority C', 'Priority D'], datasets: [{ data: ['A', 'B', 'C', 'D'].map(function (p) { return priCounts[p] }), backgroundColor: ['#cc7066', '#d6a85a', '#638ecc', '#6fc0a0'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } })
+                          mkChart('ch-vol-grade', { type: 'bar', data: { labels: ['Grade A', 'Grade B', 'Grade C', 'Grade D', 'Unknown'].map(function (g, i) { return g }), datasets: [{ data: ['A', 'B', 'C', 'D', '?'].map(function (g) { return grdCounts[g] }), backgroundColor: ['#6fc0a0', '#638ecc', '#d6a85a', '#cc7066', '#8b95ad'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } })
+                          var mRows = [];['A', 'B', 'C', 'D'].forEach(function (p) { var row = [], priTotal = 0;['A', 'B', 'C', 'D', '?'].forEach(function (g) { var v = matrix[p][g]; priTotal += v; row.push(fmtN(v)) }); row.push(fmtN(priTotal)); mRows.push(['Priority ' + p].concat(row)) }); fillSimpleTable('grid-pri-vs-grade', ['', 'Grade A', 'Grade B', 'Grade C', 'Grade D', 'Unknown', 'Total'], mRows)
+
+                          var mKeys = [...new Set(idx.map(function (r) { return r.monthKey }))].sort(), gTrend = {};['A', 'B', 'C', 'D', '?'].forEach(function (g) { gTrend[g] = {}; mKeys.forEach(function (m) { gTrend[g][m] = 0 }) }); idx.forEach(function (r) { var g = r.grade || '?', m = r.monthKey; if (gTrend[g] && gTrend[g][m] !== undefined) gTrend[g][m]++ })
+                          var gColors = { A: '#6fc0a0', B: '#638ecc', C: '#d6a85a', D: '#cc7066', '?': '#8b95ad' }, gDS = ['A', 'B', 'C', 'D', '?'].map(function (g) { return { label: g === '?' ? 'Unknown' : 'Grade ' + g, data: mKeys.map(function (m) { return gTrend[g][m] }), backgroundColor: gColors[g], stack: 'g' } })
+                          mkChart('ch-grade-trend', { type: 'bar', data: { labels: mKeys.map(function (m) { var r = idx.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m }), datasets: gDS }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, grid: { color: '#243042' } } } } })
+                          fillSimpleTable('ch-grade-trend_table', ['Month', 'Grade A', 'Grade B', 'Grade C', 'Grade D', 'Unknown', 'Total'], mKeys.map(function (m) { var row = [], tot = 0;['A', 'B', 'C', 'D', '?'].forEach(function (g) { row.push(fmtN(gTrend[g][m])); tot += gTrend[g][m] }); return [(idx.find(function (r) { return r.monthKey === m }) || {}).monthLabel || m].concat(row).concat([fmtN(tot)]) }))
+                        }
+
+                        // ================================================================
+                        // ANOMALIES
+                        // ================================================================
+                        function renderAnomalies() {
+                          var idx = FILTERED; if (!idx.length) { emptyTab('tab-anomalies'); return } else fillTab('tab-anomalies')
+                          var months = [...new Set(idx.map(function (r) { return r.monthKey }))].sort(); if (months.length < 2) { ['anom-stores', 'anom-cats', 'anom-repeat24', 'anom-zscore'].forEach(function (id) { document.getElementById(id).innerHTML = '<p class="note">Need at least 2 months of data.</p>' }); return }
+                          var latest = months[months.length - 1], baseMonths = months.slice(0, -1)
+                          var bTat = {}; idx.forEach(function (r) { var t = r.tatHours; if (t < 0) return; (bTat[r.brand] = bTat[r.brand] || []).push(t) }); var bMed = {}; Object.entries(bTat).forEach(function (e) { bMed[e[0]] = median(e[1]) })
+                          var sLate = {}; idx.forEach(function (r) { if (r.monthKey !== latest) return; var t = r.tatHours; if (t < 0) return; if (!sLate[r.store]) sLate[r.store] = { tats: [], brand: r.brand }; sLate[r.store].tats.push(t) })
+                          var aStores = []; Object.entries(sLate).forEach(function (e) { var s = e[1]; if (s.tats.length < 10) return; var med = median(s.tats), ref = bMed[s.brand] || 1; if (med > ref * 2) aStores.push({ store: e[0], brand: s.brand, med, ref, n: s.tats.length }) }); aStores.sort(function (a, b) { return (b.med / b.ref) - (a.med / a.ref) })
+                          document.getElementById('anom-stores').innerHTML = aStores.length === 0 ? '<p class="note">No outliers in current view.</p>' : aStores.slice(0, 30).map(function (a) { return '<div class="anomaly-row"><span class="tag bad">' + (a.med / a.ref).toFixed(1) + '× brand median</span> <strong>' + esc(a.store) + '</strong> (' + esc(a.brand) + ') — ' + a.med.toFixed(1) + 'h vs brand median ' + a.ref.toFixed(1) + 'h · ' + fmtN(a.n) + ' tickets</div>' }).join('')
+                          var barTop = aStores.slice(0, 8).reverse(); mkChart('ch-anom-stores-bar', { type: 'bar', data: { labels: barTop.map(function (a) { return a.store }), datasets: [{ data: barTop.map(function (a) { return +(a.med / a.ref).toFixed(2) }), backgroundColor: '#cc7066' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#243042' }, title: { display: true, text: '× brand median', color: '#9aa3b2', font: { size: 10 } } }, y: { grid: { display: false } } } } })
+                          var cLate = {}, cBase = {}; idx.forEach(function (r) { var m = r.monthKey, c = r.category; if (m === latest) cLate[c] = (cLate[c] || 0) + 1; else if (baseMonths.includes(m)) cBase[c] = (cBase[c] || 0) + 1 })
+                          var aCats = []; Object.entries(cLate).forEach(function (e) { var c = e[0], ln = e[1]; if (ln < 50) return; var avg = (cBase[c] || 0) / baseMonths.length; if (avg > 0 && ln > avg * 1.5) aCats.push({ c, ln, avg, ratio: ln / avg }) }); aCats.sort(function (a, b) { return b.ratio - a.ratio })
+                          document.getElementById('anom-cats').innerHTML = aCats.length === 0 ? '<p class="note">No volume spikes in current view.</p>' : aCats.slice(0, 30).map(function (a) { return '<div class="anomaly-row warn"><span class="tag warn">' + a.ratio.toFixed(2) + '× baseline</span> <strong>' + esc(a.c) + '</strong> — ' + fmtN(a.ln) + ' tickets in latest vs baseline avg ' + a.avg.toFixed(0) + '/mo</div>' }).join('')
+                          var catTop = aCats.slice(0, 8).reverse(); mkChart('ch-anom-cats-bar', { type: 'bar', data: { labels: catTop.map(function (a) { return a.c }), datasets: [{ data: catTop.map(function (a) { return +a.ratio.toFixed(2) }), backgroundColor: '#d6a85a' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#243042' }, title: { display: true, text: '× baseline', color: '#9aa3b2', font: { size: 10 } } }, y: { grid: { display: false } } } } })
+                          var groups = {}; idx.forEach(function (r) { var k = r.store + '|' + r.asset; (groups[k] = groups[k] || []).push(r.reportedTs) }); var rep24 = []; Object.entries(groups).forEach(function (e) { var times = e[1]; times.sort(function (a, b) { return a - b }); var pairs = 0; for (var i = 1; i < times.length; i++) { if ((times[i] - times[i - 1]) / 3600 <= 24) pairs++ } if (pairs >= 1) rep24.push([e[0].split('|')[0], e[0].split('|')[1], pairs + 1, times.length]) }); rep24.sort(function (a, b) { return b[2] - a[2] })
+                          if (grids['anom-repeat24']) grids['anom-repeat24'].destroy(); document.getElementById('anom-repeat24').innerHTML = ''
+                          if (rep24.length === 0) { document.getElementById('anom-repeat24').innerHTML = '<p class="note">No 24-hour repeats in current view.</p>' } else { grids['anom-repeat24'] = new gridjs.Grid({ columns: ['Store', 'Asset', 'Repeat events', 'Total tickets'], data: rep24.slice(0, 100), sort: true, search: true, pagination: { limit: 15 } }).render(document.getElementById('anom-repeat24')) }
+                          var anomData = RAW && RAW.anomalies || []; var filtAnom = anomData.filter(function (a) { if (FILTER.brands.size && !FILTER.brands.has(a.brand)) return false; if (FILTER.region && a.region !== FILTER.region) return false; return true })
+                          if (filtAnom.length === 0) { document.getElementById('anom-zscore').innerHTML = '<p class="note">No statistical anomalies in current view.</p>' } else { mkGrid('anom-zscore', ['Month', 'Brand', 'Region', 'Asset Family', 'Tickets', 'Spend', 'Avg TAT', 'Severity'], filtAnom.slice(0, 60).map(function (a) { return [a.monthLabel, a.brand, a.region, a.assetFamily, fmtN(a.tickets), fmtINR(a.spend), a.avgTatHours.toFixed(1) + 'h', a.severity.toFixed(2) + 'σ'] }), { pagination: { limit: 15 } }) }
+                        }
+
+                        // ================================================================
+                        // AI & PREDICTIVE INSIGHTS
+                        // ================================================================
+                        function renderAi() {
+                          var idx = FILTERED; if (!RAW || !RAW.predictiveRisk) { document.getElementById('tab-ai').querySelectorAll('.card').forEach(function (c) { c.innerHTML = '<p class="note">No predictive data available.</p>' }); return }
+                          var risks = (RAW.predictiveRisk.topRisks || []).filter(function (r) { if (FILTER.brands.size && !FILTER.brands.has(r.brand)) return false; return true }).slice(0, 100)
+                          var highR = risks.filter(function (r) { return (r.riskScore || 0) >= 70 }).length, medR = risks.filter(function (r) { return (r.riskScore || 0) >= 45 && (r.riskScore || 0) < 70 }).length
+                          var featImp = RAW.predictiveRisk.featureImportance || [], clusters = RAW.clusters || { clusters: [], stores: [] }
+                          mkChart('ai-risk-dist', { type: 'doughnut', data: { labels: ['High (≥70)', 'Medium (45-69)', 'Low (<45)'], datasets: [{ data: [highR, medR, risks.length - highR - medR], backgroundColor: ['#cc7066', '#d6a85a', '#6fc0a0'], borderWidth: 1, borderColor: '#1a2030' }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } } } })
+                          if (featImp.length) { mkChart('ai-features', { type: 'bar', data: { labels: featImp.map(function (f) { return f.feature }), datasets: [{ label: 'Importance', data: featImp.map(function (f) { return f.importance }), backgroundColor: 'rgba(212,130,138,0.72)', borderRadius: 4 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, indexAxis: 'y', scales: { x: { grid: { color: '#243042' } }, y: { grid: { display: false } } } } }) }
+                          mkGrid('grid-risks', [{ name: 'Store · Asset', formatter: function (c) { return gridjs.html(c) } }, 'Brand', 'Risk Score', 'Past 30d', 'Past 90d'], risks.slice(0, 50).map(function (r) { return [esc(r.store) + '<br><span style="color:var(--muted);font-size:11px;">' + esc(r.asset) + '</span>', r.brand, (r.riskScore || 0).toFixed(1), r.past30 || 0, r.past90 || 0] }), { pagination: { limit: 10 } })
+                          var clCont = document.getElementById('cluster-grid'); clCont.innerHTML = ''
+                          if (clusters.clusters && clusters.clusters.length) { clCont.innerHTML = '<div class="cluster-grid">' + clusters.clusters.map(function (c) { return '<div class="cluster-card"><h4>' + esc(c.clusterLabel) + '</h4><div class="cluster-meta"><span>' + fmtN(c.stores) + ' stores</span><span>' + fmtN(c.tickets) + ' tickets</span><span>' + fmtINR(c.spend) + '</span></div><div class="mini-grid"><div class="mini-stat"><div class="mini-label">Avg TAT</div><div class="mini-value">' + (c.avgTatHours || 0).toFixed(1) + 'h</div></div><div class="mini-stat"><div class="mini-label">Repeat 7d</div><div class="mini-value">' + fmtPct(c.repeat7dRate || 0) + '</div></div><div class="mini-stat"><div class="mini-label">Critical %</div><div class="mini-value">' + fmtPct(c.criticalShare || 0) + '</div></div></div></div>' }).join('') + '</div>' } else { clCont.innerHTML = '<p class="note">No cluster data available.</p>' }
+                          renderRegionRadar(idx)
+                        }
+
+                        function renderRegionRadar(idx) {
+                          var regions = [...new Set(idx.map(function (r) { return r.region }))].filter(function (r) { return r && r !== '—' }).slice(0, 6); if (regions.length < 2) { var rc = document.getElementById('ai-radar'); if (rc) rc.parentNode.innerHTML = '<p class="note">Need at least 2 regions for comparison.</p>'; return }
+                          var rMetrics = {}; regions.forEach(function (r) { rMetrics[r] = { tats: [], spend: 0, priced: 0, breaches: 0, slaCount: 0, repeats7d: 0, total: 0 } }); idx.forEach(function (row) { var r = row.region; if (!rMetrics[r]) return; rMetrics[r].total++; var t = row.tatHours; if (t >= 0) { rMetrics[r].tats.push(t); var p = row.priority; if (SLA_TARGETS[p]) { rMetrics[r].slaCount++; if (t > SLA_TARGETS[p]) rMetrics[r].breaches++ } } if (row.amount > 0) { rMetrics[r].spend += row.amount; rMetrics[r].priced++ } if (row.repeat7d) rMetrics[r].repeats7d++ });
+                          var vol = regions.map(function (r) { return rMetrics[r].total }); var vMax = Math.max.apply(null, vol); var tat = regions.map(function (r) { return rMetrics[r].tats.length ? median(rMetrics[r].tats) : 0 }); var tMax = Math.max.apply(null, tat); var cost = regions.map(function (r) { return rMetrics[r].priced ? rMetrics[r].spend / rMetrics[r].priced : 0 }); var cMax = Math.max.apply(null, cost); var sla = regions.map(function (r) { return rMetrics[r].slaCount ? 1 - (rMetrics[r].breaches / rMetrics[r].slaCount) : 0 }); var repeat = regions.map(function (r) { return rMetrics[r].total ? rMetrics[r].repeats7d / rMetrics[r].total : 0 }); var rMax = Math.max.apply(null, repeat);
+                          var norm = function (arr, m) { return arr.map(function (v) { return m ? +(v / m * 100).toFixed(1) : 0 }) }; var radarDS = [{ label: 'Volume (tickets)', data: norm(vol, vMax), backgroundColor: 'rgba(99,142,204,0.08)', borderColor: '#638ecc', pointBackgroundColor: '#638ecc' }, { label: 'TAT (lower=better)', data: norm(tat, tMax).map(function (v) { return 100 - v }), backgroundColor: 'rgba(111,192,160,0.08)', borderColor: '#6fc0a0', pointBackgroundColor: '#6fc0a0' }, { label: 'Cost/ticket (lower=better)', data: norm(cost, cMax).map(function (v) { return 100 - v }), backgroundColor: 'rgba(214,168,90,0.08)', borderColor: '#d6a85a', pointBackgroundColor: '#d6a85a' }, { label: 'SLA compliance', data: sla.map(function (v) { return v * 100 }), backgroundColor: 'rgba(204,112,102,0.08)', borderColor: '#cc7066', pointBackgroundColor: '#cc7066' }, { label: 'No-repeat %', data: repeat.map(function (v) { return (1 - v) * 100 }), backgroundColor: 'rgba(180,122,217,0.08)', borderColor: '#b47ad9', pointBackgroundColor: '#b47ad9' }];
+                          mkChart('ai-radar', { type: 'radar', data: { labels: regions, datasets: radarDS }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, scales: { r: { min: 0, max: 100, grid: { color: '#243042' }, angleLines: { color: '#243042' }, pointLabels: { color: '#9aa3b2', font: { size: 10 } }, ticks: { display: false, stepSize: 25 } } } } })
+                        }
+
+                        // ================================================================
+                        // ASSET MODAL
+                        // ================================================================
+                        function openAssetModal(assetName) {
+                          var allIdx = FILTERED.length ? FILTERED : TICKETS; var aRows = allIdx.filter(function (r) { return r.asset === assetName }); if (!aRows.length) return
+                          var tats = aRows.map(function (r) { return r.tatHours }).filter(function (t) { return t >= 0 }), spend = 0, withCost = 0; aRows.forEach(function (r) { if (r.amount > 0) { spend += r.amount; withCost++ } })
+                          document.getElementById('am-title').textContent = 'Asset Deep Dive: ' + assetName
+                          document.getElementById('am-kpis').innerHTML = [{ cls: 'accent', label: 'Tickets', value: fmtN(aRows.length) }, { cls: '', label: 'Median TAT', value: median(tats).toFixed(1) + 'h' }, { cls: '', label: 'Mean TAT', value: mean(tats).toFixed(1) + 'h' }, { cls: 'warn', label: 'Spend', value: fmtINR(spend) }, { cls: '', label: 'Priced tickets', value: fmtN(withCost) }].map(function (k) { return '<div class="kpi compact ' + k.cls + '"><div class="label">' + k.label + '</div><div class="value">' + k.value + '</div></div>' }).join('')
+                          var monthly = {}; aRows.forEach(function (r) { monthly[r.monthKey] = (monthly[r.monthKey] || 0) + 1 }); var mKeys = Object.keys(monthly).sort(); destroyChart('am-trend'); charts['am-trend'] = new Chart(document.getElementById('am-trend'), { type: 'bar', data: { labels: mKeys.map(function (m) { var r = aRows.find(function (x) { return x.monthKey === m }); return r ? r.monthLabel : m }), datasets: [{ data: mKeys.map(function (m) { return monthly[m] }), backgroundColor: '#638ecc' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } })
+                          var types = {}; aRows.forEach(function (r) { types[r.issue] = (types[r.issue] || 0) + 1 }); var tTop = Object.entries(types).sort(function (a, b) { return b[1] - a[1] }).slice(0, 8); destroyChart('am-types'); charts['am-types'] = new Chart(document.getElementById('am-types'), { type: 'bar', data: { labels: tTop.map(function (e) { return e[0] }), datasets: [{ data: tTop.map(function (e) { return e[1] }), backgroundColor: '#6fc0a0' }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#243042' } }, y: { grid: { display: false } } } } })
+                          var stores = {}; aRows.forEach(function (r) { stores[r.store] = (stores[r.store] || 0) + 1 }); var sTop = Object.entries(stores).sort(function (a, b) { return b[1] - a[1] }).slice(0, 10); document.getElementById('am-stores').innerHTML = '<thead><tr><th>Store</th><th class="num">Tickets</th></tr></thead><tbody>' + sTop.map(function (e) { return '<tr><td>' + esc(e[0]) + '</td><td class="num">' + fmtN(e[1]) + '</td></tr>' }).join('') + '</tbody>'
+                          var buckets = ['0-4h', '4-24h', '1-3 days', '3-7 days', '1-2 weeks', '>2 weeks'], bc = [0, 0, 0, 0, 0, 0]; tats.forEach(function (t) { if (t <= 4) bc[0]++; else if (t <= 24) bc[1]++; else if (t <= 72) bc[2]++; else if (t <= 168) bc[3]++; else if (t <= 336) bc[4]++; else bc[5]++ }); destroyChart('am-tat'); charts['am-tat'] = new Chart(document.getElementById('am-tat'), { type: 'bar', data: { labels: buckets, datasets: [{ data: bc, backgroundColor: ['#6fc0a0', '#638ecc', '#7facd6', '#d6a85a', '#d4828a', '#cc7066'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#243042' } }, x: { grid: { display: false } } } } })
+                          document.getElementById('asset-modal').classList.add('active')
+                        }
+                        document.getElementById('asset-modal-close').onclick = function () { document.getElementById('asset-modal').classList.remove('active') }
+                        document.getElementById('asset-modal').onclick = function (e) { if (e.target.id === 'asset-modal') e.target.classList.remove('active') }
+
+                        // ================================================================
+                        // HELPERS
+                        // ================================================================
+                        function fillSimpleTable(elId, headers, rows) { var h = '<table class="simple"><thead><tr>' + headers.map(function (h, i) { return '<th' + (i > 0 ? ' class="num"' : '') + '>' + esc(h) + '</th>' }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td' + (i > 0 ? ' class="num"' : '') + '>' + c + '</td>' }).join('') + '</tr>' }).join('') + '</tbody></table>'; document.getElementById(elId).innerHTML = h }
+
+                        // ================================================================
+                        // MASTER RENDER
+                        // ================================================================
+                        var pendingRender = null;
+                        function renderAll() {
+                          if (pendingRender) cancelAnimationFrame(pendingRender); pendingRender = requestAnimationFrame(function () {
+                            applyFilters(); renderSummary(); renderKPIs(); var tab = document.querySelector('.tab.active'); if (!tab) return; var active = tab.dataset.tab
+                            if (active === 'overview') renderOverview()
+                            else if (active === 'tat') renderTAT()
+                            else if (active === 'assets') renderAssets()
+                            else if (active === 'spend') renderSpend()
+                            else if (active === 'teams') renderTeams()
+                            else if (active === 'grade') renderGrade()
+                            else if (active === 'anomalies') renderAnomalies()
+                            else if (active === 'ai') renderAi(); injectAskAiBadges()
+                          })
+                        }
+
+                        // ================================================================
+                        // CHAT / GEMINI
+                        // ================================================================
+                        var CHAT_BACKEND_URL = ''; /* same-origin — FastAPI serves both frontend and API */
+                        var chatHistory = [];
+                        function buildContext() { var tab = document.querySelector('.tab.active'); var activeTab = tab ? tab.dataset.tab : 'overview'; var summary = document.getElementById('filter-summary').textContent; var kpis = []; document.querySelectorAll('#kpi-grid .kpi').forEach(function (k) { var label = k.querySelector('.label')?.textContent || ''; var val = k.querySelector('.value')?.textContent || ''; kpis.push(label + ': ' + val) }); var idx = FILTERED; var bv = {}; idx.forEach(function (r) { bv[r.brand] = (bv[r.brand] || 0) + 1 }); var topBrands = Object.entries(bv).filter(function (e) { return e[0] !== 'Unknown' }).sort(function (a, b) { return b[1] - a[1] }).slice(0, 8); var cv = {}; idx.forEach(function (r) { cv[r.category] = (cv[r.category] || 0) + 1 }); var topCats = Object.entries(cv).sort(function (a, b) { return b[1] - a[1] }).slice(0, 10); var sv = {}; idx.forEach(function (r) { sv[r.store] = (sv[r.store] || 0) + 1 }); var topStores = Object.entries(sv).sort(function (a, b) { return b[1] - a[1] }).slice(0, 10); var pri = { A: 0, B: 0, C: 0, D: 0 }; idx.forEach(function (r) { if (pri[r.priority] !== undefined) pri[r.priority]++ }); var tatArr = []; idx.forEach(function (r) { if (r.tatHours >= 0) tatArr.push(r.tatHours) }); var spend = 0; idx.forEach(function (r) { if (r.amount > 0) spend += r.amount }); var rv = {}; idx.forEach(function (r) { if (r.region && r.region !== '-') rv[r.region] = (rv[r.region] || 0) + 1 }); var topRegions = Object.entries(rv).sort(function (a, b) { return b[1] - a[1] }).slice(0, 6); var anom = (RAW.anomalies || []).filter(function (a) { if (FILTER.brands.size && !FILTER.brands.has(a.brand)) return false; if (FILTER.region && a.region !== FILTER.region) return false; return true }).slice(0, 5); var anomalies = anom.map(function (a) { return a.monthLabel + ': ' + a.brand + ' ' + a.assetFamily + ' (' + a.region + ') — ' + a.tickets + ' tickets, ' + fmtINR(a.spend) + ', severity ' + a.severity.toFixed(2) }); var _t = tatArr.slice().sort(function (a, b) { return a - b }); var _m = _t.length ? (_t.length % 2 === 0 ? (_t[_t.length / 2 - 1] + _t[_t.length / 2]) / 2 : _t[Math.floor(_t.length / 2)]) : 0; var _a = tatArr.length ? tatArr.reduce(function (s, v) { return s + v }, 0) / tatArr.length : 0; return { activeTab: activeTab, summary: summary, kpis: kpis, ticketCount: idx.length, totalTickets: TICKETS.length, medianTAT: _m.toFixed(1), meanTAT: _a.toFixed(1), totalSpend: spend, priority: pri, topBrands: topBrands, topCats: topCats, topStores: topStores, topRegions: topRegions, anomalies: anomalies, dataWindow: (RAW.metadata ? RAW.metadata.dateRange.start + ' - ' + RAW.metadata.dateRange.end : 'N/A'), vendorScores: (RAW.vendorScores || []).slice(0, 10).map(function (v) { return v.name + ': grade ' + v.grade + ', spend=' + fmtINR(v.totalSpend) + ', repeat=' + v.repeatPct + '%' }), gradeBreakdown: (function () { var gv = {}; idx.forEach(function (r) { var g = r.grade || '?'; gv[g] = (gv[g] || 0) + 1 }); return Object.entries(gv).sort(function (a, b) { return b[1] - a[1] }).map(function (e) { return e[0] + '=' + fmtN(e[1]) }).join(', ') })() } }
+                        function chatAddMsg(text, role) { role = role || 'bot'; var body = document.getElementById('chat-body'); var el = document.createElement('div'); el.className = 'chat-msg ' + role; el.innerHTML = chatFormat(text); body.appendChild(el); body.scrollTop = body.scrollHeight }
+                        function chatFormat(t) { if (!t) return ''; t = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); t = t.replace(/`(.+?)`/g, '<code>$1</code>'); t = t.replace(/\n/g, '<br>'); return '<p>' + t + '</p>' }
+                        function chatShowLoading() { var body = document.getElementById('chat-body'); var el = document.createElement('div'); el.className = 'chat-loading'; el.id = 'chat-loading'; el.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:4px">Thinking...</span>'; body.appendChild(el); body.scrollTop = body.scrollHeight }
+                        function chatHideLoading() { var el = document.getElementById('chat-loading'); if (el) el.remove() }
+                        function chatSend() {
+                          var input = document.getElementById('chat-input'); var text = input.value.trim(); if (!text) return; input.value = ''; input.style.height = 'auto'; input.scrollTop = 0; var welcome = document.getElementById('chat-welcome'); if (welcome) welcome.style.display = 'none'; chatAddMsg(text, 'user')
+                          chatShowLoading(); var ctx = buildContext();
+                          fetch(CHAT_BACKEND_URL + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: chatHistory.concat([{ role: 'user', text: text }]), context: ctx }) }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Server error ' + r.status); return d }) }).then(function (data) { chatHideLoading(); var reply = data.reply || 'No response.'; if (data.error) { chatAddMsg('Error: ' + data.error); return } chatAddMsg(reply); chatHistory.push({ role: 'user', text: text }, { role: 'assistant', text: reply }) }).catch(function (err) { chatHideLoading(); var msg = err.message; if (msg.includes('image') || msg.includes('video') || msg.includes('audio')) msg = 'This model (Gemini 3.1 Pro Preview) is text-only. It cannot process images, videos, or audio. Try a question about the dashboard data instead.'; chatAddMsg('Error: ' + msg) })
+                        }
+                        document.getElementById('chat-btn').onclick = function () { var p = document.getElementById('chat-panel'); var b = this; if (p.classList.contains('active')) { p.classList.remove('active'); b.classList.remove('active') } else { p.classList.add('active'); b.classList.add('active'); document.getElementById('chat-input').focus() } }
+                        document.getElementById('chat-close').onclick = function () { document.getElementById('chat-panel').classList.remove('active'); document.getElementById('chat-btn').classList.remove('active') }
+                        document.getElementById('chat-send').onclick = chatSend
+                        document.getElementById('chat-input').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px' }); document.getElementById('chat-input').onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend() } }
+
+
+                        function showLogin() { location.reload() }
+                        function showApp() {
+                          document.getElementById('appbar').style.display = 'block'; document.getElementById('app-container').style.display = 'block'; if (booted) return; booted = true; document.getElementById('loading').style.display = 'flex'; document.getElementById('loading-text').textContent = 'Loading ' + fmtN(64570) + ' tickets...'
+
+
+                          fetch('./data.json').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() }).then(function (payload) { RAW = payload; TICKETS = materialize(payload.tickets); document.getElementById('hdr-record-count').textContent = fmtN(TICKETS.length); document.getElementById('hdr-date-range').textContent = payload.metadata.dateRange.start.split('-').reverse().join('/') + ' – ' + payload.metadata.dateRange.end.split('-').reverse().join('/'); initFilters(); initTabs(); initToggles(); renderAll(); setTimeout(injectAskAiBadges, 200); document.getElementById('loading').style.display = 'none' }).catch(function (err) { document.getElementById('loading').style.display = 'none'; document.getElementById('tab-overview').innerHTML = '<div class="note">Failed to load data: ' + esc(err.message) + '. Make sure this folder is served through a local web server.</div>' })
+                        }
+                        document.addEventListener('DOMContentLoaded', showApp)
+                      </script>
+</body>
+
+</html>

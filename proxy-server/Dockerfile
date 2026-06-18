@@ -1,8 +1,7 @@
 FROM python:3.13-slim
 WORKDIR /app
-COPY proxy-server/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY proxy-server/app.py .
-COPY frontend/ frontend/
+COPY app.py .
 EXPOSE 8000
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

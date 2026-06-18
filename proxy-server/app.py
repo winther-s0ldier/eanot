@@ -1,7 +1,7 @@
 import os, json, pathlib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import httpx
@@ -9,9 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR / "frontend" / "data.json"
-FRONTEND_DIR = BASE_DIR / "frontend"
+DATA_PATH = pathlib.Path(__file__).resolve().parent.parent / "frontend" / "data.json"
 FULL_CONTEXT = ""
 
 def load_data():
@@ -154,6 +152,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+FRONTEND_DIR = pathlib.Path(__file__).resolve().parent.parent / "frontend"
+
 GEMINI_KEY = os.environ.get("GOOGLE_GEMINI_KEY", "")
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-pro-preview")
 
@@ -232,5 +232,5 @@ COMPLETE DASHBOARD DATA:
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# Serve frontend static files — mount after API routes so /api/* takes precedence
-app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
